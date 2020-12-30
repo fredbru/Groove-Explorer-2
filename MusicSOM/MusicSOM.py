@@ -154,8 +154,8 @@ class MusicSOM(object):
         # random initialization
         self.weights = self._random_generator.rand(x, y, input_len)
         # continue from previous
-        self.weights = np.load("SOM_Weights.npy")
-        print("continued from 1M")
+        #self.weights = np.load("SOM_Weights.npy")
+        #print("continued from 1M")
         self.activation_map = np.zeros((x, y))
 
         self._neigx = np.arange(x)

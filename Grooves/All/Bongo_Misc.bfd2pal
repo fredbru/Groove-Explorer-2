@@ -1,0 +1,472 @@
+<root timeformat="ticks" ppqn="1000000">
+    <BFD2GrooveBundle name="bundle">
+        <BFD2GrooveBundleInfo name="info" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Bongo_Misc" info_rating="3" bpm="140.00014000014" genre="Percussion" timesig="4/4">
+            <VObjectArray name="grooves" count="0" />
+        </BFD2GrooveBundleInfo>
+        <VDictionary name="grooves" version="2" count="12">
+            <VDictionaryPair>
+                <VValue type="int" value="60" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Baion.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Baion" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="15">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="266666" len="87500" kpslot="13" kpartic="0" vel="0.795276" />
+                            <BFD2GrooveHit pos="512500" len="87500" kpslot="13" kpartic="0" vel="0.637795" />
+                            <BFD2GrooveHit pos="775000" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="1020833" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="1520833" len="87500" kpslot="13" kpartic="0" vel="0.92126" />
+                            <BFD2GrooveHit pos="1775000" len="87500" kpslot="13" kpartic="0" vel="0.590551" />
+                            <BFD2GrooveHit pos="2012500" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="2250000" len="87500" kpslot="13" kpartic="1" vel="0.314961" />
+                            <BFD2GrooveHit pos="2533333" len="87500" kpslot="12" kpartic="0" vel="0.976378" />
+                            <BFD2GrooveHit pos="2770833" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="3020833" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="3250000" len="87500" kpslot="13" kpartic="1" vel="0.299213" />
+                            <BFD2GrooveHit pos="3525000" len="87500" kpslot="13" kpartic="0" vel="0.944882" />
+                            <BFD2GrooveHit pos="3779166" len="75000" kpslot="13" kpartic="1" vel="0.653543" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+            <VDictionaryPair>
+                <VValue type="int" value="61" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Beguine A.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Beguine A" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="11">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="512500" len="87500" kpslot="13" kpartic="0" vel="0.874016" />
+                            <BFD2GrooveHit pos="770833" len="87500" kpslot="13" kpartic="0" vel="0.858268" />
+                            <BFD2GrooveHit pos="1016666" len="87500" kpslot="13" kpartic="0" vel="0.929134" />
+                            <BFD2GrooveHit pos="1520833" len="87500" kpslot="13" kpartic="0" vel="0.850394" />
+                            <BFD2GrooveHit pos="2012500" len="87500" kpslot="12" kpartic="0" vel="0.944882" />
+                            <BFD2GrooveHit pos="2250000" len="87500" kpslot="13" kpartic="1" vel="0.425197" />
+                            <BFD2GrooveHit pos="2500000" len="87500" kpslot="13" kpartic="0" vel="0.850394" />
+                            <BFD2GrooveHit pos="2750000" len="87500" kpslot="13" kpartic="1" vel="0.480315" />
+                            <BFD2GrooveHit pos="3012500" len="87500" kpslot="12" kpartic="0" vel="0.952756" />
+                            <BFD2GrooveHit pos="3520833" len="79167" kpslot="13" kpartic="0" vel="0.874016" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+            <VDictionaryPair>
+                <VValue type="int" value="62" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Beguine.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Beguine" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="9">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="13" kpartic="0" vel="0.944882" />
+                            <BFD2GrooveHit pos="512500" len="87500" kpslot="13" kpartic="0" vel="0.874016" />
+                            <BFD2GrooveHit pos="770833" len="87500" kpslot="13" kpartic="0" vel="0.858268" />
+                            <BFD2GrooveHit pos="1016666" len="87500" kpslot="13" kpartic="0" vel="0.929134" />
+                            <BFD2GrooveHit pos="1520833" len="87500" kpslot="13" kpartic="0" vel="0.850394" />
+                            <BFD2GrooveHit pos="2000000" len="87500" kpslot="13" kpartic="0" vel="0.944882" />
+                            <BFD2GrooveHit pos="2500000" len="87500" kpslot="13" kpartic="0" vel="0.850394" />
+                            <BFD2GrooveHit pos="3000000" len="87500" kpslot="12" kpartic="0" vel="0.929134" />
+                            <BFD2GrooveHit pos="3520833" len="79167" kpslot="13" kpartic="0" vel="0.874016" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+            <VDictionaryPair>
+                <VValue type="int" value="63" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Calypso A.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Calypso A" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="14">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="13" kpartic="0" vel="0.937008" />
+                            <BFD2GrooveHit pos="520833" len="87500" kpslot="13" kpartic="0" vel="0.897638" />
+                            <BFD2GrooveHit pos="770833" len="87500" kpslot="13" kpartic="0" vel="0.732283" />
+                            <BFD2GrooveHit pos="1270833" len="87500" kpslot="13" kpartic="0" vel="0.779528" />
+                            <BFD2GrooveHit pos="1520833" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="1775000" len="87500" kpslot="13" kpartic="0" vel="0.811024" />
+                            <BFD2GrooveHit pos="2016666" len="87500" kpslot="13" kpartic="0" vel="0.866142" />
+                            <BFD2GrooveHit pos="2283333" len="87500" kpslot="13" kpartic="0" vel="0.614173" />
+                            <BFD2GrooveHit pos="2520833" len="87500" kpslot="13" kpartic="0" vel="0.937008" />
+                            <BFD2GrooveHit pos="2770833" len="87500" kpslot="13" kpartic="0" vel="0.653543" />
+                            <BFD2GrooveHit pos="3000000" len="87500" kpslot="13" kpartic="0" vel="0.937008" />
+                            <BFD2GrooveHit pos="3258333" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="3525000" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="3775000" len="87500" kpslot="13" kpartic="0" vel="0.818898" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+            <VDictionaryPair>
+                <VValue type="int" value="64" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Calypso B.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Calypso B" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="9">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="13" kpartic="0" vel="0.858268" />
+                            <BFD2GrooveHit pos="775000" len="87500" kpslot="13" kpartic="0" vel="0.669291" />
+                            <BFD2GrooveHit pos="1012500" len="87500" kpslot="13" kpartic="0" vel="0.795276" />
+                            <BFD2GrooveHit pos="1520833" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="2016666" len="87500" kpslot="13" kpartic="0" vel="0.84252" />
+                            <BFD2GrooveHit pos="2533333" len="87500" kpslot="13" kpartic="0" vel="0.811024" />
+                            <BFD2GrooveHit pos="2775000" len="87500" kpslot="13" kpartic="0" vel="0.645669" />
+                            <BFD2GrooveHit pos="3266666" len="87500" kpslot="13" kpartic="0" vel="0.771654" />
+                            <BFD2GrooveHit pos="3520833" len="95833" kpslot="12" kpartic="0" vel="1" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+            <VDictionaryPair>
+                <VValue type="int" value="65" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Calypso.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Calypso" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="12">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="13" kpartic="0" vel="0.897638" />
+                            <BFD2GrooveHit pos="283333" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="770833" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="1270833" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="1520833" len="87500" kpslot="12" kpartic="0" vel="0.889764" />
+                            <BFD2GrooveHit pos="1775000" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="2016666" len="87500" kpslot="13" kpartic="0" vel="0.866142" />
+                            <BFD2GrooveHit pos="2283333" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="2770833" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="3275000" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="3525000" len="87500" kpslot="12" kpartic="0" vel="0.905512" />
+                            <BFD2GrooveHit pos="3775000" len="87500" kpslot="13" kpartic="0" vel="1" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+            <VDictionaryPair>
+                <VValue type="int" value="66" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Cha Cha A.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Cha Cha A" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="6">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="13" kpartic="0" vel="0.984252" />
+                            <BFD2GrooveHit pos="516666" len="87500" kpslot="12" kpartic="0" vel="0.905512" />
+                            <BFD2GrooveHit pos="1520833" len="87500" kpslot="13" kpartic="0" vel="0.944882" />
+                            <BFD2GrooveHit pos="2516666" len="87500" kpslot="13" kpartic="0" vel="0.88189" />
+                            <BFD2GrooveHit pos="3020833" len="87500" kpslot="12" kpartic="0" vel="0.976378" />
+                            <BFD2GrooveHit pos="3537500" len="87500" kpslot="12" kpartic="0" vel="0.976378" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+            <VDictionaryPair>
+                <VValue type="int" value="67" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Cha Cha.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Cha Cha" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="6">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="1020833" len="87500" kpslot="12" kpartic="0" vel="0.96063" />
+                            <BFD2GrooveHit pos="1525000" len="87500" kpslot="13" kpartic="0" vel="0.976378" />
+                            <BFD2GrooveHit pos="2012500" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="3020833" len="87500" kpslot="12" kpartic="0" vel="0.976378" />
+                            <BFD2GrooveHit pos="3516666" len="87500" kpslot="13" kpartic="0" vel="0.984252" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+            <VDictionaryPair>
+                <VValue type="int" value="68" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Merengue.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Merengue" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="8">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="13" kpartic="0" vel="0.992126" />
+                            <BFD2GrooveHit pos="775000" len="87500" kpslot="13" kpartic="0" vel="0.811024" />
+                            <BFD2GrooveHit pos="1520833" len="87500" kpslot="12" kpartic="0" vel="0.850394" />
+                            <BFD2GrooveHit pos="2516666" len="87500" kpslot="13" kpartic="0" vel="0.858268" />
+                            <BFD2GrooveHit pos="3000000" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="3262500" len="87500" kpslot="12" kpartic="0" vel="0.944882" />
+                            <BFD2GrooveHit pos="3520833" len="87500" kpslot="12" kpartic="0" vel="0.992126" />
+                            <BFD2GrooveHit pos="3775000" len="87500" kpslot="12" kpartic="0" vel="0.968504" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+            <VDictionaryPair>
+                <VValue type="int" value="69" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Samba A.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Samba A" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="12">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="12" kpartic="0" vel="0.937008" />
+                            <BFD2GrooveHit pos="516666" len="87500" kpslot="12" kpartic="0" vel="0.905512" />
+                            <BFD2GrooveHit pos="775000" len="87500" kpslot="13" kpartic="0" vel="0.685039" />
+                            <BFD2GrooveHit pos="1012500" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="1516666" len="87500" kpslot="13" kpartic="0" vel="0.850394" />
+                            <BFD2GrooveHit pos="1775000" len="87500" kpslot="13" kpartic="0" vel="0.661417" />
+                            <BFD2GrooveHit pos="2016666" len="87500" kpslot="12" kpartic="0" vel="0.905512" />
+                            <BFD2GrooveHit pos="2512500" len="87500" kpslot="12" kpartic="0" vel="0.92126" />
+                            <BFD2GrooveHit pos="2770833" len="87500" kpslot="13" kpartic="0" vel="0.858268" />
+                            <BFD2GrooveHit pos="3016666" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="3279166" len="87500" kpslot="13" kpartic="0" vel="0.88189" />
+                            <BFD2GrooveHit pos="3770833" len="87500" kpslot="13" kpartic="0" vel="0.992126" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+            <VDictionaryPair>
+                <VValue type="int" value="70" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Samba B.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Samba B" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="11">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="516666" len="87500" kpslot="13" kpartic="0" vel="0.889764" />
+                            <BFD2GrooveHit pos="1016666" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="1516666" len="87500" kpslot="13" kpartic="0" vel="0.905512" />
+                            <BFD2GrooveHit pos="1775000" len="87500" kpslot="13" kpartic="0" vel="0.622047" />
+                            <BFD2GrooveHit pos="2016666" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="2279166" len="87500" kpslot="13" kpartic="1" vel="0.606299" />
+                            <BFD2GrooveHit pos="2770833" len="87500" kpslot="13" kpartic="0" vel="0.858268" />
+                            <BFD2GrooveHit pos="3016666" len="87500" kpslot="12" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="3520833" len="87500" kpslot="13" kpartic="0" vel="0.897638" />
+                            <BFD2GrooveHit pos="3770833" len="87500" kpslot="13" kpartic="0" vel="0.661417" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+            <VDictionaryPair>
+                <VValue type="int" value="71" />
+                <BFD2GrooveSlot fill="false">
+                    <BFD2Groove name="groove" timeformat="ticks" ppqn="1000000">
+                        <BFD2GrooveInfo name="info" info_path="C:\Users\Drew\Desktop\Percussion working folder\Percussion BFD2\Grooves\Per\Bongo_Misc\Samba.mid" info_library="BFD2 Percussion" info_author="Fxpansion Audio UK Ltd" info_authurl="fxpansion" info_name="Samba" info_rating="3" bpm="140.00014000014" genre="Percussion" bars="1" timesig="4/4" />
+                        <VObjectArray name="kitpieces" count="2">
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="3" slotindex="12">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                            <BFD2GrooveKitPiece kpclass="Tom" kpindex="4" slotindex="13">
+                                <VObjectArray name="artics" count="4">
+                                    <BFD2GrooveArtic articid="0" articname="Hit" />
+                                    <BFD2GrooveArtic articid="1" articname="Alternative" />
+                                    <BFD2GrooveArtic articid="2" articname="Rim Shot" />
+                                    <BFD2GrooveArtic articid="8000" articname="Choke" />
+                                </VObjectArray>
+                            </BFD2GrooveKitPiece>
+                        </VObjectArray>
+                        <VObjectArray name="hits" count="11">
+                            <BFD2GrooveHit pos="0" len="87500" kpslot="12" kpartic="0" vel="0.937008" />
+                            <BFD2GrooveHit pos="516666" len="87500" kpslot="12" kpartic="0" vel="0.834646" />
+                            <BFD2GrooveHit pos="775000" len="87500" kpslot="13" kpartic="0" vel="0.685039" />
+                            <BFD2GrooveHit pos="1012500" len="87500" kpslot="13" kpartic="0" vel="1" />
+                            <BFD2GrooveHit pos="1516666" len="87500" kpslot="13" kpartic="0" vel="0.850394" />
+                            <BFD2GrooveHit pos="1775000" len="87500" kpslot="13" kpartic="0" vel="0.700787" />
+                            <BFD2GrooveHit pos="2016666" len="87500" kpslot="12" kpartic="0" vel="0.905512" />
+                            <BFD2GrooveHit pos="2512500" len="87500" kpslot="12" kpartic="0" vel="0.874016" />
+                            <BFD2GrooveHit pos="2770833" len="87500" kpslot="13" kpartic="0" vel="0.858268" />
+                            <BFD2GrooveHit pos="3016666" len="87500" kpslot="13" kpartic="0" vel="0.929134" />
+                            <BFD2GrooveHit pos="3516666" len="87500" kpslot="13" kpartic="0" vel="0.834646" />
+                        </VObjectArray>
+                    </BFD2Groove>
+                </BFD2GrooveSlot>
+            </VDictionaryPair>
+        </VDictionary>
+        <BFD2BundleUserState name="userstate" gridswingamount="0.5">
+            <BFD2QuantizeTemplate name="gridquantizetemplate" div="16" divtype="normal" swing="0" />
+        </BFD2BundleUserState>
+    </BFD2GrooveBundle>
+</root>
