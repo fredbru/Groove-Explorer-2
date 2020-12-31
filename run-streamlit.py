@@ -6,12 +6,13 @@ import pandas as pd
 import time
 from MusicSOM.MusicSOM import *
 import sys
-from matplotlib import pyplot as plt
 import random
+import pydeck as pdk
+
 
 
 st.title('Groove Explorer 2')
-palette_names = 'Small_AL_Tester'
+palette_folder = 'Small_AL_Tester'
 def make_node_locations(dim):
     xNodePoints = np.arange(dim+1)
     yNodePoints = np.arange(dim+1)
@@ -28,13 +29,13 @@ def get_winners(features, names, som, palette_names):
     for x, g, p, t in zip(features, names, palette_names, itemIndex):
         w = som.winner(x)
         weightMap[w] = im
-        winners.append([g, p, w[0], w[1]])
+        winners.append([g, p[:-8], w[0], w[1]])
         im = im+1
     return winners
 
 ##
 # Plot som output as labelled winner nodes, save output to csv file. Also plots U-Matrix underneath winner map.
-def plot_winners(features, names, som, palette_names, showUMatrix=False):
+def plot_winners_matplotlib(features, names, som, palette_names, showUMatrix=False):
     plt.figure()
     itemIndex = range(len(names))
     weightMap = {}
@@ -68,30 +69,32 @@ def plot_winners(features, names, som, palette_names, showUMatrix=False):
     plt.show(block=False)
     return winners
 
-def setup_SOM(palette_names):
-    combinedLabels = np.load(palette_names + 'Names.npy')
+def plot_winners_pydeck(features, names, som, palette_names):
+    pass
+
+def setup_SOM(palette_folder):
+    combinedLabels = np.load(palette_folder + 'Names.npy')
     names = combinedLabels[0]
     #palette_names = os.listdir('/home/fred/BFD/python/grooves/' + sys.argv[1] + '/')
-    palette_name = combinedLabels[1]
-    print(palette_name)
+    palette_names = combinedLabels[1]
     features = np.load('Small_AL_Tester' + ".npy")
     features = features.astype(np.float32)
     featureLength = features.shape[1]
 
     som = MusicSOM(10, 10, featureLength, sigma=0.3, learning_rate=0.5, perceptualWeighting=False)
     som.random_weights_init(features)
-    return som, features, names
+    return som, features, names, palette_names
 
 
 latest_iteration = st.empty()
 bar = st.progress(0)
 
-som, features, names = setup_SOM(palette_names)
+som, features, names, palette_names = setup_SOM(palette_folder)
 
 with st.spinner('Generating SOM - please wait'):
     som.trainCPU(features, num_iterations=1000)
-winners = get_winners(features, names, som, palette_names)
+winners = pd.DataFrame(get_winners(features, names, som, palette_names))
 st.success('Done!')
 
-plot_winners(features, names, som, palette_names)
-plt.show()
+print(winners)
+plot_winners_pydeck(features, names, som, palette_folder)
