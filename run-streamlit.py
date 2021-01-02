@@ -7,9 +7,10 @@ import time
 from MusicSOM.MusicSOM import *
 import sys
 import random
-import pydeck as pdk
-
-
+import pydeck
+from bokeh.plotting import figure
+from bokeh.models import ColumnDataSource
+from bokeh.models.tools import HoverTool
 
 st.title('Groove Explorer 2')
 palette_folder = 'Small_AL_Tester'
@@ -26,10 +27,25 @@ def get_winners(features, names, som, palette_names):
     weightMap = {}
     im = 0
     winners = []
-    for x, g, p, t in zip(features, names, palette_names, itemIndex):
+    colours = []
+
+    for x, n, p, t in zip(features, names, palette_names, itemIndex):
         w = som.winner(x)
         weightMap[w] = im
-        winners.append([g, p[:-8], w[0], w[1]])
+        offsetX = random.uniform(-0.2, 0.2) #small x and y offsets to stop labels being plotted on top of each other
+        offsetY = random.uniform(-0.2, 0.2)
+
+        c='green'
+        if p == 'Pop V3.bfd3pal':
+            c = 'darkgreen'
+        if p == 'Smooth Jazz.bfd3pal':
+            c = 'darkmagenta'
+        if p == 'Peter Erskine Rock.bfd3pal':
+            c = 'dodgerblue'
+        if p == 'Stanton Moore JB.bfd3pal':
+            c = 'orangered'
+
+        winners.append([n, p[:-8], w[0]+offsetX, w[1]+offsetY,c])
         im = im+1
     return winners
 
@@ -86,15 +102,22 @@ def setup_SOM(palette_folder):
     return som, features, names, palette_names
 
 
-latest_iteration = st.empty()
-bar = st.progress(0)
-
 som, features, names, palette_names = setup_SOM(palette_folder)
 
 with st.spinner('Generating SOM - please wait'):
     som.trainCPU(features, num_iterations=1000)
-winners = pd.DataFrame(get_winners(features, names, som, palette_names))
-st.success('Done!')
+groove_mapping = pd.DataFrame(get_winners(features, names, som, palette_names), columns=['GrooveName',
+                                                                'PaletteName', 'X', 'Y', 'Colour'])
+source = ColumnDataSource(groove_mapping)
+hover= HoverTool()
+hover.tooltips=[
+    ('Name', '@GrooveName'),
+    ('Palette', '@PaletteName')
+]
 
-print(winners)
-plot_winners_pydeck(features, names, som, palette_folder)
+p = figure(title='Groove Explorer v2', x_range=(-1,10), y_range=(-1,10), tools=[])
+p.add_tools(hover)
+p.circle(source=source, x='X', y='Y', color='Colour',fill_alpha=0.6, size=10)
+st.bokeh_chart(p, use_container_width=True)
+
+
