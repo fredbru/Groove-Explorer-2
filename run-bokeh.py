@@ -7,7 +7,7 @@ import random
 import pydeck
 from bokeh.plotting import figure, output_file, show
 from bokeh.models import ColumnDataSource
-from bokeh.models.tools import HoverTool
+from bokeh.models.tools import HoverTool, TapTool
 from bokeh.models.callbacks import CustomJS
 
 output_file("tool.html")
@@ -28,8 +28,8 @@ def get_winners(features, names, som, palette_names):
     for x, n, p, t in zip(features, names, palette_names, itemIndex):
         w = som.winner(x)
         weightMap[w] = im
-        offsetX = random.uniform(-0.3, 0.3) #small x and y offsets to stop labels being plotted on top of each other
-        offsetY = random.uniform(-0.3, 0.3)
+        offsetX = random.uniform(-0.2, 0.2) #small x and y offsets to stop labels being plotted on top of each other
+        offsetY = random.uniform(-0.2, 0.2)
 
         c='green'
         if p == 'Pop V3.bfd3pal':
@@ -95,31 +95,42 @@ def setup_SOM(palette_folder):
 
 
 som, features, names, palette_names = setup_SOM(palette_folder)
-som.trainCPU(features, num_iterations=1000)
+som.trainCPU(features, num_iterations=20000)
 groove_mapping = pd.DataFrame(get_winners(features, names, som, palette_names), columns=['GrooveName',
                                                                 'PaletteName', 'X', 'Y', 'Colour'])
-
 CODE = """
-var audio = new Audio(audioname);
-console.log(audio.src);
+var alldata = source.data;
+var selected = source.selected.indices;
+var groovename = alldata['GrooveName'][selected[0]];
+var filetype = ".mp3";
+var directory = "Audio/";
+var file = directory.concat(groovename, filetype);
+
+console.log("Playing " + file + "...");
+var audio = new Audio(file);
 audio.play();
 """
 
 
 source = ColumnDataSource(groove_mapping)
+print(source.data['GrooveName'][1])
 hover= HoverTool()
 hover.tooltips=[
     ('Name', '@GrooveName'),
     ('Palette', '@PaletteName')
 ]
+
+tap = TapTool()
+tap.callback=CustomJS(code=CODE, args=dict(source=source))
+# p.js_on_event('tap', CustomJS(code=CODE, args=dict(audioname="test-audio.mp3")))
+
+
 TOOLS = "crosshair, pan, reset, box_zoom, wheel_zoom"
 p = figure(x_range=(-1,10), y_range=(-1,10), tools=TOOLS, title='Groove Explorer 2')
 p.add_tools(hover)
+p.add_tools(tap)
 
 p.circle(source=source, x='X', y='Y', color='Colour',fill_alpha=0.6, size=13,
-         hover_fill_color='yellow', hover_alpha=1)
-
-p.js_on_event('tap', CustomJS(code=CODE, args=dict(audioname="test-audio.mp3"))
-)
+         hover_fill_color='yellow', hover_alpha=1, nonselection_alpha=0.6)
 
 show(p)
