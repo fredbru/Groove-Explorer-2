@@ -7,7 +7,7 @@ import random
 import pydeck
 from bokeh.plotting import figure, output_file, show
 from bokeh.models import ColumnDataSource
-from bokeh.models.tools import HoverTool, TapTool
+from bokeh.models.tools import HoverTool, TapTool, PointDrawTool
 from bokeh.models.callbacks import CustomJS
 
 output_file("tool.html")
@@ -95,10 +95,10 @@ def setup_SOM(palette_folder):
 
 
 som, features, names, palette_names = setup_SOM(palette_folder)
-som.trainCPU(features, num_iterations=20000)
+som.trainCPU(features, num_iterations=2100)
 groove_mapping = pd.DataFrame(get_winners(features, names, som, palette_names), columns=['GrooveName',
                                                                 'PaletteName', 'X', 'Y', 'Colour'])
-CODE = """
+TAPCODE = """
 var alldata = source.data;
 var selected = source.selected.indices;
 var groovename = alldata['GrooveName'][selected[0]];
@@ -111,26 +111,36 @@ var audio = new Audio(file);
 audio.play();
 """
 
+DRAGCODE = """
+var alldata = source.data;
+var selected = source.selected indicies;
+var groovename = alldata['GrooveName'][selected[0]];
+console.log(groovename);
+
+"""
+
 
 source = ColumnDataSource(groove_mapping)
-print(source.data['GrooveName'][1])
 hover= HoverTool()
 hover.tooltips=[
     ('Name', '@GrooveName'),
     ('Palette', '@PaletteName')
 ]
 
-tap = TapTool()
-tap.callback=CustomJS(code=CODE, args=dict(source=source))
-# p.js_on_event('tap', CustomJS(code=CODE, args=dict(audioname="test-audio.mp3")))
-
-
-TOOLS = "crosshair, pan, reset, box_zoom, wheel_zoom"
+TOOLS = "crosshair, pan, wheel_zoom"
 p = figure(x_range=(-1,10), y_range=(-1,10), tools=TOOLS, title='Groove Explorer 2')
+
+tap = TapTool()
+tap.callback=CustomJS(code=TAPCODE, args=dict(source=source))
+# p.js_on_event('tap', CustomJS(code=CODE, args=dict(audioname="test-audio.mp3")))
 p.add_tools(hover)
 p.add_tools(tap)
 
-p.circle(source=source, x='X', y='Y', color='Colour',fill_alpha=0.6, size=13,
+renderer = p.circle(source=source, x='X', y='Y', color='Colour',fill_alpha=0.6, size=13,
          hover_fill_color='yellow', hover_alpha=1, nonselection_alpha=0.6)
+
+
+point_drag = PointDrawTool(renderers=[renderer], empty_value='black', add=False)
+p.add_tools(point_drag)
 
 show(p)
