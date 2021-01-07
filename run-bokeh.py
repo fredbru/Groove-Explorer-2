@@ -5,10 +5,12 @@ from MusicSOM.MusicSOM import *
 import sys
 import random
 import pydeck
-from bokeh.plotting import figure, output_file, show
-from bokeh.models import ColumnDataSource
+from bokeh.layouts import column
+from bokeh.plotting import figure, output_file, show, curdoc
+from bokeh.models import ColumnDataSource, Button
 from bokeh.models.tools import HoverTool, TapTool, PointDrawTool
 from bokeh.models.callbacks import CustomJS
+from bokeh.events import PanEnd
 
 output_file("tool.html")
 palette_folder = 'Small_AL_Tester'
@@ -28,8 +30,8 @@ def get_winners(features, names, som, palette_names):
     for x, n, p, t in zip(features, names, palette_names, itemIndex):
         w = som.winner(x)
         weightMap[w] = im
-        offsetX = random.uniform(-0.2, 0.2) #small x and y offsets to stop labels being plotted on top of each other
-        offsetY = random.uniform(-0.2, 0.2)
+        # offsetX = round(random.uniform(-0.1, 0.1),1) #small x and y offsets to stop labels being plotted on top of each other
+        # offsetY = round(random.uniform(-0.1, 0.1),1)
 
         c='green'
         if p == 'Pop V3.bfd3pal':
@@ -41,7 +43,7 @@ def get_winners(features, names, som, palette_names):
         if p == 'Stanton Moore JB.bfd3pal':
             c = 'orangered'
 
-        winners.append([n, p[:-8], w[0]+offsetX, w[1]+offsetY,c])
+        winners.append([n, p[:-8], w[0], w[1],c])
         im = im+1
     return winners
 
@@ -95,9 +97,13 @@ def setup_SOM(palette_folder):
 
 
 som, features, names, palette_names = setup_SOM(palette_folder)
-som.trainCPU(features, num_iterations=2100)
-groove_mapping = pd.DataFrame(get_winners(features, names, som, palette_names), columns=['GrooveName',
+som.trainCPU(features, num_iterations=1000)
+groove_map_info = pd.DataFrame(get_winners(features, names, som, palette_names), columns=['GrooveName',
                                                                 'PaletteName', 'X', 'Y', 'Colour'])
+print(groove_map_info)
+groove_winners = groove_map_info[['GrooveName','X', 'Y',]]
+print(groove_winners)
+
 TAPCODE = """
 var alldata = source.data;
 var selected = source.selected.indices;
@@ -112,19 +118,29 @@ audio.play();
 """
 
 DRAGCODE = """
+console.log(cb_data);
 var alldata = source.data;
-var selected = source.selected indicies;
-var groovename = alldata['GrooveName'][selected[0]];
-console.log(groovename);
+var xdata = alldata['X'];
 
+for (var i=0; i < xdata.length; i++) {
+        console.log(xdata[i] + " " + cb_obj.x);
+        if (xdata[i] == cb_obj.x)
+            console.log(xdata[i]);
+        }
 """
 
+def pan_python_callback():
+    for i in range(123):
+        if source.data['X'][i] != groove_winners['X'][i]:
+            print(groove_winners['GrooveName'][i])
 
-source = ColumnDataSource(groove_mapping)
+
+source = ColumnDataSource(groove_map_info)
 hover= HoverTool()
 hover.tooltips=[
     ('Name', '@GrooveName'),
-    ('Palette', '@PaletteName')
+    ('Palette', '@PaletteName'),
+    ('X', '@X')
 ]
 
 TOOLS = "crosshair, pan, wheel_zoom"
@@ -140,7 +156,11 @@ renderer = p.circle(source=source, x='X', y='Y', color='Colour',fill_alpha=0.6, 
          hover_fill_color='yellow', hover_alpha=1, nonselection_alpha=0.6)
 
 
-point_drag = PointDrawTool(renderers=[renderer], empty_value='black', add=False)
+point_drag = PointDrawTool(renderers=[renderer], add=False)
 p.add_tools(point_drag)
+#p.js_on_event(events.PanEnd, CustomJS(code=DRAGCODE, args=dict(source=source)))
+p.on_event(PanEnd, pan_python_callback)
 
-show(p)
+# b = Button()
+# b.on_click(lambda: print("CLICK!"))
+curdoc().add_root(column(p))
