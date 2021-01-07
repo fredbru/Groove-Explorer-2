@@ -11,6 +11,7 @@ from bokeh.models import ColumnDataSource, Button
 from bokeh.models.tools import HoverTool, TapTool, PointDrawTool
 from bokeh.models.callbacks import CustomJS
 from bokeh.events import PanEnd
+from functools import partial
 
 output_file("tool.html")
 palette_folder = 'Small_AL_Tester'
@@ -100,9 +101,8 @@ som, features, names, palette_names = setup_SOM(palette_folder)
 som.trainCPU(features, num_iterations=1000)
 groove_map_info = pd.DataFrame(get_winners(features, names, som, palette_names), columns=['GrooveName',
                                                                 'PaletteName', 'X', 'Y', 'Colour'])
-print(groove_map_info)
-groove_winners = groove_map_info[['GrooveName','X', 'Y',]]
-print(groove_winners)
+
+source = ColumnDataSource(groove_map_info)
 
 TAPCODE = """
 var alldata = source.data;
@@ -131,11 +131,14 @@ for (var i=0; i < xdata.length; i++) {
 
 def pan_python_callback():
     for i in range(123):
-        if source.data['X'][i] != groove_winners['X'][i]:
-            print(groove_winners['GrooveName'][i])
+        if source.data['X'][i] != groove_map_info['X'][i]:
+            #print(groove_map_info['GrooveName'][i])
+            new_X = round(source.data['X'][i],0)
+            new_Y = round(source.data['Y'][i],0)
+            source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
+            #source = ColumnDataSource(groove_map_info)
 
 
-source = ColumnDataSource(groove_map_info)
 hover= HoverTool()
 hover.tooltips=[
     ('Name', '@GrooveName'),
