@@ -132,11 +132,11 @@ for (var i=0; i < xdata.length; i++) {
 def pan_python_callback():
     for i in range(123):
         if source.data['X'][i] != groove_map_info['X'][i]:
-            #print(groove_map_info['GrooveName'][i])
             new_X = round(source.data['X'][i],0)
             new_Y = round(source.data['Y'][i],0)
             source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
-            #source = ColumnDataSource(groove_map_info)
+            groove_map_info.at[i, 'X'] = new_X
+            groove_map_info.at[i, 'Y'] = new_Y
 
 
 hover= HoverTool()
