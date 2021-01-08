@@ -7,13 +7,14 @@ import random
 import pydeck
 from bokeh.layouts import column
 from bokeh.plotting import figure, output_file, show, curdoc
-from bokeh.models import ColumnDataSource, Button
+from bokeh.models import ColumnDataSource, Button, TextInput
 from bokeh.models.tools import HoverTool, TapTool, PointDrawTool
 from bokeh.models.callbacks import CustomJS
 from bokeh.events import PanEnd
 from functools import partial
 
-output_file("tool.html")
+# To run: bokeh serve --show run-bokeh.py
+
 palette_folder = 'Small_AL_Tester'
 def make_node_locations(dim):
     xNodePoints = np.arange(dim+1)
@@ -31,8 +32,8 @@ def get_winners(features, names, som, palette_names):
     for x, n, p, t in zip(features, names, palette_names, itemIndex):
         w = som.winner(x)
         weightMap[w] = im
-        # offsetX = round(random.uniform(-0.1, 0.1),1) #small x and y offsets to stop labels being plotted on top of each other
-        # offsetY = round(random.uniform(-0.1, 0.1),1)
+        offsetX = round(random.uniform(-0.15, 0.15),2) #small x and y offsets to stop labels being plotted on top of each other
+        offsetY = round(random.uniform(-0.15, 0.15),2)
 
         c='green'
         if p == 'Pop V3.bfd3pal':
@@ -44,7 +45,7 @@ def get_winners(features, names, som, palette_names):
         if p == 'Stanton Moore JB.bfd3pal':
             c = 'orangered'
 
-        winners.append([n, p[:-8], w[0], w[1],c])
+        winners.append([n, p[:-8], w[0]+offsetX, w[1]+offsetY,c])
         im = im+1
     return winners
 
@@ -101,7 +102,6 @@ som, features, names, palette_names = setup_SOM(palette_folder)
 som.trainCPU(features, num_iterations=1000)
 groove_map_info = pd.DataFrame(get_winners(features, names, som, palette_names), columns=['GrooveName',
                                                                 'PaletteName', 'X', 'Y', 'Colour'])
-
 source = ColumnDataSource(groove_map_info)
 
 TAPCODE = """
@@ -117,53 +117,62 @@ var audio = new Audio(file);
 audio.play();
 """
 
-DRAGCODE = """
-console.log(cb_data);
-var alldata = source.data;
-var xdata = alldata['X'];
-
-for (var i=0; i < xdata.length; i++) {
-        console.log(xdata[i] + " " + cb_obj.x);
-        if (xdata[i] == cb_obj.x)
-            console.log(xdata[i]);
-        }
-"""
-
 def pan_python_callback():
     for i in range(123):
         if source.data['X'][i] != groove_map_info['X'][i]:
-            new_X = round(source.data['X'][i],0)
-            new_Y = round(source.data['Y'][i],0)
+            new_X = round(source.data['X'][i],0) + round(random.uniform(-0.15, 0.15),2)
+            new_Y = round(source.data['Y'][i],0) + round(random.uniform(-0.15, 0.15),2)
             source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
             groove_map_info.at[i, 'X'] = new_X
             groove_map_info.at[i, 'Y'] = new_Y
+
+def regenerate_SOM(num_iterations=1000):
+    print('Regenerating SOM with ' + str(num_iterations) + " iterations.....")
+    som, features, names, palette_names = setup_SOM(palette_folder)
+    som.trainCPU(features, num_iterations)
+    groove_map_info.update(pd.DataFrame(get_winners(features, names, som, palette_names),
+                                        columns=['GrooveName', 'PaletteName', 'X', 'Y','Colour']))
+    for i in range(123):
+        new_X = groove_map_info['X'][i]
+        new_Y = groove_map_info['Y'][i]
+        source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
+    print('Done')
+
+
+def text_input_handler(attr, old, new):
+    try:
+        num_iterations=int(new)
+        regenerate_SOM(num_iterations=num_iterations)
+    except ValueError:
+        print("Please enter a valid number")
 
 
 hover= HoverTool()
 hover.tooltips=[
     ('Name', '@GrooveName'),
     ('Palette', '@PaletteName'),
-    ('X', '@X')
 ]
 
 TOOLS = "crosshair, pan, wheel_zoom"
-p = figure(x_range=(-1,10), y_range=(-1,10), tools=TOOLS, title='Groove Explorer 2')
+explorer = figure(x_range=(-1,10), y_range=(-1,10), tools=TOOLS, title='Groove Explorer 2')
 
 tap = TapTool()
 tap.callback=CustomJS(code=TAPCODE, args=dict(source=source))
 # p.js_on_event('tap', CustomJS(code=CODE, args=dict(audioname="test-audio.mp3")))
-p.add_tools(hover)
-p.add_tools(tap)
+explorer.add_tools(hover)
+explorer.add_tools(tap)
 
-renderer = p.circle(source=source, x='X', y='Y', color='Colour',fill_alpha=0.6, size=13,
+renderer = explorer.circle(source=source, x='X', y='Y', color='Colour',fill_alpha=0.6, size=13,
          hover_fill_color='yellow', hover_alpha=1, nonselection_alpha=0.6)
 
-
 point_drag = PointDrawTool(renderers=[renderer], add=False)
-p.add_tools(point_drag)
+explorer.add_tools(point_drag)
 #p.js_on_event(events.PanEnd, CustomJS(code=DRAGCODE, args=dict(source=source)))
-p.on_event(PanEnd, pan_python_callback)
+explorer.on_event(PanEnd, pan_python_callback)
 
-# b = Button()
-# b.on_click(lambda: print("CLICK!"))
-curdoc().add_root(column(p))
+# b = Button(label="Regenerate Map")
+# b.on_click(regenerate_SOM)
+text_input = TextInput(value="1000", title="Number of iterations (Press Enter to generate):")
+text_input.on_change("value", text_input_handler)
+
+curdoc().add_root(column(explorer,text_input))
