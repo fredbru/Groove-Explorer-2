@@ -15,7 +15,7 @@ from functools import partial
 
 # To run: bokeh serve --show run-bokeh.py
 
-palette_folder = 'Small_AL_Tester'
+palette_folder = 'Groove-Explorer-2/Small_AL_Tester'
 def make_node_locations(dim):
     xNodePoints = np.arange(dim+1)
     yNodePoints = np.arange(dim+1)
@@ -49,46 +49,12 @@ def get_winners(features, names, som, palette_names):
         im = im+1
     return winners
 
-def plot_winners_matplotlib(features, names, som, palette_names, showUMatrix=False):
-    plt.figure()
-    itemIndex = range(len(names))
-    weightMap = {}
-    im = 0
-    winners = []
-    previousPalette = 'none'
-    if showUMatrix == True:
-        plt.pcolor(som.distance_map().T)
-    for x, g, p, t in zip(features, names, palette_names, itemIndex):  # scatterplot
-        w = som.winner(x)
-        weightMap[w] = im
-        offsetX = random.uniform(-0.3, 0.3) #small x and y offsets to stop labels being plotted on top of each other
-        offsetY = random.uniform(-0.3, 0.3)
-        if p != previousPalette:
-            colour = np.random.uniform(low=0.1,high=0.9, size=3)
-            print(colour)
-        plt.text(w[0] + offsetX +.5, w[1] + offsetY +.5, g,
-                 color=colour, fontdict={'size': 7})
-
-        #plt.annotate(l, (w[0] + offset, w[1]+offset))
-        winners.append([g, p, w[0],w[1]])
-        im = im + 1
-        previousPalette = p
-    plt.axis([0, som.weights.shape[0], 0, som.weights.shape[1]])
-    nodes = np.indices((som.x,som.y)).reshape(2,-1)
-    nx = list(nodes[0])
-    nxOffset = [x+0.5 for x in nx]
-    ny = list(nodes[1])
-    nyOffset = [x+0.5 for x in ny]
-    plt.scatter(nxOffset, nyOffset, 3) #plots SOM node positions as blue dots on grid
-    plt.show(block=False)
-    return winners
-
 def setup_SOM(palette_folder):
     combinedLabels = np.load(palette_folder + 'Names.npy')
     names = combinedLabels[0]
     #palette_names = os.listdir('/home/fred/BFD/python/grooves/' + sys.argv[1] + '/')
     palette_names = combinedLabels[1]
-    features = np.load('Small_AL_Tester' + ".npy")
+    features = np.load('Groove-Explorer-2/Small_AL_Tester' + ".npy")
     features = features.astype(np.float32)
     featureLength = features.shape[1]
 
@@ -109,10 +75,11 @@ var alldata = source.data;
 var selected = source.selected.indices;
 var groovename = alldata['GrooveName'][selected[0]];
 var filetype = ".mp3";
-var directory = "Audio/";
+var directory = "Groove-Explorer-2/static/Audio/";
 var file = directory.concat(groovename, filetype);
 
-console.log("Playing " + file + "...");
+
+console.log("Playing " + groovename + "...");
 var audio = new Audio(file);
 audio.play();
 """
@@ -138,14 +105,12 @@ def regenerate_SOM(num_iterations=1000):
         source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
     print('Done')
 
-
 def text_input_handler(attr, old, new):
     try:
         num_iterations=int(new)
         regenerate_SOM(num_iterations=num_iterations)
     except ValueError:
         print("Please enter a valid number")
-
 
 hover= HoverTool()
 hover.tooltips=[
@@ -158,7 +123,6 @@ explorer = figure(x_range=(-1,10), y_range=(-1,10), tools=TOOLS, title='Groove E
 
 tap = TapTool()
 tap.callback=CustomJS(code=TAPCODE, args=dict(source=source))
-# p.js_on_event('tap', CustomJS(code=CODE, args=dict(audioname="test-audio.mp3")))
 explorer.add_tools(hover)
 explorer.add_tools(tap)
 
@@ -170,8 +134,6 @@ explorer.add_tools(point_drag)
 #p.js_on_event(events.PanEnd, CustomJS(code=DRAGCODE, args=dict(source=source)))
 explorer.on_event(PanEnd, pan_python_callback)
 
-# b = Button(label="Regenerate Map")
-# b.on_click(regenerate_SOM)
 text_input = TextInput(value="1000", title="Number of iterations (Press Enter to generate):")
 text_input.on_change("value", text_input_handler)
 
