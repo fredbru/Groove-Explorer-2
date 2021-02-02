@@ -4,6 +4,8 @@ from warnings import warn
 from numba import cuda
 import math
 import timeit
+import cvxpy as cvx
+import dccp
 
 """ Self-Organising Map library by Fred Bruford
     Functionality for both GPU and CPU computation. CPU computation will work on any machine, GPU should but may have
@@ -12,12 +14,6 @@ import timeit
     HIGHLY RECOMMENDED: If using GPU, run on an external server/machine. If you try to use your built in GPU that's
     used for processing your display, you can run into issues with CUDA blocking processing times over a few seconds.
 """
-
-def fast_norm_weighted(x, weight):
-    """Returns norm-2 of a 1-D numpy array, for CPU computation incorporating awareness weighting.
-    weighted norm = sqrt(weight * (a-b)^2)
-    """
-    return math.sqrt(np.sum(weight*(np.power(x,2))))
 
 def fast_norm(x):
     """Returns norm-2 of a 1-D numpy array for CPU computation.
@@ -160,49 +156,19 @@ class MusicSOM(object):
 
         self._neigx = np.arange(x)
         self._neigy = np.arange(y)  # used to evaluate the neighborhood function
-        if perceptualWeighting == True:
-            self.perceptualWeightVector = self.setAwarenessProfileWeighting(input_len)
-        else:
-            self.perceptualWeightVector = np.ones(input_len, dtype=np.float64)
 
         self.wL = np.ones(input_len, dtype=np.float64)
         self.SOMSize = x * y
         self.x = x
         self.y = y
-
-    def setAwarenessProfileWeighting(self, input_len):
-        """
-        Set awareness profile weighting (for use with BFD grooves)
-        Based on Gomez-Marin 'PAD and SAD' 2016 paper - Weights for beats 1-4 = 1 0.27 0.22 0.16
-        :param input_len:
-        :return:
-        """
-        awarenessWeight = 1
-        kitPieceWeight = 1
-        j=0
-        perceptualWeightVector = np.ones(input_len)
-        for i in range(-1,input_len):
-            perceptualWeightVector[i] = perceptualWeightVector[i] * awarenessWeight * kitPieceWeight
-            if  j == 0:
-                awarenessWeight = 1
-            if j == 8:
-                awarenessWeight = 0.27
-            if j == 16:
-                awarenessWeight = 0.22
-            if j == 24:
-                awarenessWeight = 0.16
-            if j < 31:
-                j=j+1
-            else:
-                j=0
-        return perceptualWeightVector
+        self.perceptual_weights = np.ones([input_len])
 
     def winner(self, x):
         """Computes the coordinates of the winning neuron for the sample x
         Done on CPU.
         :param x: sample item
         """
-        s = np.subtract(x, self.weights)  # x - w
+        s = np.subtract(self.perceptual_weights*x, self.weights*self.perceptual_weights)  # x - w
         it = np.nditer(self.activation_map, flags=['multi_index'])
         while not it.finished:
             # || x - w ||
@@ -281,8 +247,6 @@ class MusicSOM(object):
             winner = self.winner(randomItem)
             g = self.getUpdateFunction(winner, iteration, num_iterations)
             self.update(randomItem, iteration, g, num_iterations)
-
-
 
     def getUpdateFunction(self, winner, iteration, num_iterations):
         """ Generate update function for node matrix, considering winner location, radius function and learning rate
@@ -372,3 +336,70 @@ class MusicSOM(object):
         for x in data:
             winmap[self.winner(x)].append(x)
         return winmap
+
+    def update_active_learning(self, groove, new_coordinates, old_coordinates):
+        # Perform active learning from a single movement
+        old_weights = self.perceptual_weights
+        q = -2.0*old_weights
+        P = np.identity(groove.shape[0])
+        print(self.weights)
+
+        #A = (groove-self.weights[old_coordinates[0],old_coordinates[1],:]) - \
+        #    (groove-self.weights[new_coordinates[0],new_coordinates[1],:])
+        #print('A= ', A)
+
+        print(groove)
+
+        # need to change this constraint - for d1 to not just be larger than d2 but larger than
+        # all other distancess
+        l = 0.000
+        u = 1.0
+        x = cvx.Variable(groove.shape[0], nonneg=True)
+
+        target_d = groove-self.weights[new_coordinates[0],new_coordinates[1],:]
+        target_d_sum = cvx.norm(cvx.multiply(target_d, x))
+        print('target d sum = ', target_d_sum) #should be 1 number - isn't
+        print('target d sum is DCP? = ', target_d_sum.is_dcp())
+        constraints = []
+        node_d = []
+        node_d_sum = []
+        it = np.nditer(self.activation_map, flags=['multi_index'])
+        i=0
+        while not it.finished:
+            if [it.multi_index[0], it.multi_index[1]] != [new_coordinates[0], new_coordinates[1]]:
+                node_d.append(groove - self.weights[it.multi_index[0],
+                                                        it.multi_index[1], :])
+                node_d_sum.append(cvx.norm(cvx.multiply(node_d[i], x)))
+                #print("node d sum ", i, " is DCP? = ", node_d_sum[i].is_dcp())
+                #print("node d curve ", node_d_sum[i].curvature)
+                #print("target d curve ", target_d_sum.curvature)
+
+                diff = node_d_sum[i] - target_d_sum
+
+                #print("difference curve ", diff.curvature)
+
+                #print('node d sum', node_d_sum[i].size, node_d_sum[i].is_scalar())
+                #print("Diff is scalar? ", diff.is_scalar())
+                #constraints += [(-1.0 * node_d_sum[i]) >= (-1.0*target_d_sum)]
+                #constraints += [diff >= 0.0]
+                constraints += [node_d_sum[i] >= target_d_sum] # need to do 2 norm..?
+                # print("constraints = dcp? ", constraints[i].is_dcp())
+         #       constraints += [cp.sum(node_distance[i] @ x) >= cp.sum(target_d @ x)] # need to do 2 norm..?
+                i+=1
+            it.iternext()
+        constraints+=[0.00<=x]
+        constraints+=[x<=1.5]
+        problem = cvx.Problem(cvx.Minimize((1/2)*cvx.quad_form(x,P) + q.T @ x),constraints)
+                             # [ds@x >= d2@x,
+                             #  #A @ x <= u,
+                             #  0.00001 <= x,
+                             #  x <= 1])
+        print("Problem = DCCP? ", dccp.is_dccp(problem))
+        problem.solve(method='dccp', max_iter=500)
+        print("status:", problem.status)
+        print("optimal value", problem.value)
+        new_x = x.value
+        print("x = ", new_x)
+        self.perceptual_weights = new_x
+        print('result =', self.winner(groove))
+        # need to incorporate perceptual weighting into som map
