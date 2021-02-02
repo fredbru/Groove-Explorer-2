@@ -388,7 +388,7 @@ class MusicSOM(object):
                 i+=1
             it.iternext()
         constraints+=[0.00<=x]
-        constraints+=[x<=1.5]
+        constraints+=[x<=5.0]
         problem = cvx.Problem(cvx.Minimize((1/2)*cvx.quad_form(x,P) + q.T @ x),constraints)
                              # [ds@x >= d2@x,
                              #  #A @ x <= u,
