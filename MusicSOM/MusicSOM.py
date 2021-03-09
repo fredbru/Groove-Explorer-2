@@ -111,7 +111,8 @@ def GPUSOM(weights, activation_map, data, ax, ay,g,iterations,random,randomItem,
 class MusicSOM(object):
     def __init__(self, x, y, input_len, sigma=1.0, learning_rate=0.5,
                   perceptualWeighting=True, random_seed=11):
-        """Initializes a Self Organizing Maps.
+
+        """Initializes a Self Organizing Map.
         Parameters
         ----------
         decision_tree : decision tree
@@ -161,14 +162,16 @@ class MusicSOM(object):
         self.SOMSize = x * y
         self.x = x
         self.y = y
-        self.perceptual_weights = np.ones([input_len])
+        self.perceptual_weights = np.full(input_len, 0.5)
+        self.local_weights = np.ones(self.weights.shape)
 
     def winner(self, x):
         """Computes the coordinates of the winning neuron for the sample x
         Done on CPU.
         :param x: sample item
         """
-        s = np.subtract(self.perceptual_weights*x, self.weights*self.perceptual_weights)  # x - w
+        #s = np.subtract(self.perceptual_weights * x, self.weights * self.perceptual_weights)
+        s = np.subtract(x*self.local_weights, self.weights*self.local_weights)  # x - w #NEED TO CHANGE THIS TO x*perceptual weights for global weighting
         it = np.nditer(self.activation_map, flags=['multi_index'])
         while not it.finished:
             # || x - w ||
@@ -247,6 +250,7 @@ class MusicSOM(object):
             winner = self.winner(randomItem)
             g = self.getUpdateFunction(winner, iteration, num_iterations)
             self.update(randomItem, iteration, g, num_iterations)
+        print(self.weights)
 
     def getUpdateFunction(self, winner, iteration, num_iterations):
         """ Generate update function for node matrix, considering winner location, radius function and learning rate
@@ -306,10 +310,18 @@ class MusicSOM(object):
 
     def _gaussian(self, c, sigma):
         """Returns a Gaussian centered in c"""
-        d = 2 * np.pi * sigma * sigma
+        # d = 2 * np.pi * sigma * sigma
+        # ax = np.exp(-np.power(self._neigx - c[0], 2) / d)
+        # ay = np.exp(-np.power(self._neigy - c[1], 2) / d)
+        # return np.outer(ax, ay)  # the external product gives a matrix
+
+        sig = self.sigma
+        d = 2.0 * np.pi * pow(sig, 2)
         ax = np.exp(-np.power(self._neigx - c[0], 2) / d)
         ay = np.exp(-np.power(self._neigy - c[1], 2) / d)
-        return np.outer(ax, ay)  # the external product gives a matrix
+
+        g = np.outer(ax, ay)
+        return g
 
     def activation_response(self, data):
         """
@@ -337,29 +349,22 @@ class MusicSOM(object):
             winmap[self.winner(x)].append(x)
         return winmap
 
-    def update_active_learning(self, groove, new_coordinates, old_coordinates):
+    def update_active_learning_quadratic(self, groove, new_coordinates, old_coordinates):
         # Perform active learning from a single movement
         old_weights = self.perceptual_weights
-        q = -2.0*old_weights
+        q = -old_weights
         P = np.identity(groove.shape[0])
-        print(self.weights)
 
         #A = (groove-self.weights[old_coordinates[0],old_coordinates[1],:]) - \
         #    (groove-self.weights[new_coordinates[0],new_coordinates[1],:])
         #print('A= ', A)
 
-        print(groove)
-
         # need to change this constraint - for d1 to not just be larger than d2 but larger than
         # all other distancess
-        l = 0.000
-        u = 1.0
         x = cvx.Variable(groove.shape[0], nonneg=True)
 
         target_d = groove-self.weights[new_coordinates[0],new_coordinates[1],:]
         target_d_sum = cvx.norm(cvx.multiply(target_d, x))
-        print('target d sum = ', target_d_sum) #should be 1 number - isn't
-        print('target d sum is DCP? = ', target_d_sum.is_dcp())
         constraints = []
         node_d = []
         node_d_sum = []
@@ -388,14 +393,14 @@ class MusicSOM(object):
                 i+=1
             it.iternext()
         constraints+=[0.00<=x]
-        constraints+=[x<=5.0]
+        constraints+=[x<=1.0]
         problem = cvx.Problem(cvx.Minimize((1/2)*cvx.quad_form(x,P) + q.T @ x),constraints)
                              # [ds@x >= d2@x,
                              #  #A @ x <= u,
                              #  0.00001 <= x,
                              #  x <= 1])
         print("Problem = DCCP? ", dccp.is_dccp(problem))
-        problem.solve(method='dccp', max_iter=500)
+        problem.solve(method='dccp', max_iter=100)
         print("status:", problem.status)
         print("optimal value", problem.value)
         new_x = x.value
@@ -403,3 +408,73 @@ class MusicSOM(object):
         self.perceptual_weights = new_x
         print('result =', self.winner(groove))
         # need to incorporate perceptual weighting into som map
+
+    def update_active_learning_nurnberger_global(self, groove, new_coordinates, old_coordinates):
+        source_node = self.weights[old_coordinates[0],old_coordinates[1],:]
+        target_node = self.weights[new_coordinates[0],new_coordinates[1],:]
+
+        source_error_vector = np.absolute(groove-source_node / fast_norm(groove - source_node))
+        target_error_vector = np.absolute(groove-target_node / fast_norm(groove - target_node))
+
+        error_vector = source_error_vector - target_error_vector # = f
+        learning_rate = 0.00005
+        new_x = new_coordinates[0]
+        possible_x = new_x, new_x + 1, new_x -1
+        new_y = new_coordinates[1]
+        possible_y = new_y, new_y + 1, new_y -1
+
+        for i in range(100000):
+            #print(i)
+            winner = self.winner(groove)
+            winner_x = winner[0]
+            winner_y = winner[1]
+            if (winner_x in possible_x) and (winner_y in possible_y):
+                print("Winner = ", self.winner(groove))
+                break
+            else:
+                self.perceptual_weights = self.perceptual_weights +(error_vector * learning_rate)
+        print(self.perceptual_weights)
+
+    def update_active_learning_nurnberger_local(self, groove, new_coordinates, old_coordinates):
+        source_node = self.weights[old_coordinates[0], old_coordinates[1], :]
+        target_node = self.weights[new_coordinates[0], new_coordinates[1], :]
+
+        source_error = np.absolute(groove - source_node / fast_norm(groove - source_node)).reshape(1,1,16)
+        target_error = np.absolute(groove - target_node / fast_norm(groove - target_node)).reshape(1,1,16)
+
+        new_x = new_coordinates[0]
+        possible_x = new_x, new_x + 1, new_x -1
+        new_y = new_coordinates[1]
+        possible_y = new_y, new_y + 1, new_y -1
+
+        sigma = 5.0
+        source_distance_map = self._gaussian(old_coordinates, sigma).reshape(12,12,1)
+        target_distance_map = self._gaussian(new_coordinates, sigma).reshape(12,12,1)
+        print("sdm shape = ", source_distance_map.shape)
+        print("se shape = ", source_error.shape)
+        print("local weights shape = ", self.local_weights.shape)
+
+        learning_rate = 0.00001
+        print(source_distance_map)
+        print(target_distance_map)
+        for i in range(10000):
+            if i %10 == 0:
+                #print(self.local_weights[new_x, new_y,:], new_x, new_y)
+                print(self.winner(groove))
+                print(i)
+            winner = self.winner(groove)
+            winner_x = winner[0]
+            winner_y = winner[1]
+            if (winner_x in possible_x) and (winner_y in possible_y):
+                print("Winner = ", self.winner(groove))
+                break
+            else:
+                # local_weights = x,y,input_len
+                # source_error = input_len
+                # source/target_distance_map = x,y
+                old_weights = self.local_weights.copy()
+                addition = (learning_rate * ((source_error*source_distance_map) - (target_error*target_distance_map)))
+                x = old_weights + (learning_rate * ((source_error*source_distance_map) - (target_error*target_distance_map)))
+                self.local_weights =  x / np.max(x)
+                # print("localweights= ", self.local_weights)
+                print("localweights= ", self.local_weights[new_x, new_y, :])
