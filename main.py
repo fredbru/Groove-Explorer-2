@@ -54,7 +54,6 @@ def pan_python_callback():
         source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
     print('Done')
 
-
 def make_node_locations(dim):
     xNodePoints = np.arange(dim+1)
     yNodePoints = np.arange(dim+1)
@@ -151,14 +150,15 @@ if (groovename != "undefined")
     console.log("Playing " + groovename + "...");
     }
 """
-np.set_printoptions(suppress=True, precision=3)
+np.set_printoptions(suppress=True, precision=6)
 np.set_printoptions(edgeitems=50, linewidth=100000)
 
 dim = 12
 som, features, names, palette_names = setup_SOM(palette_folder,dim)
 print(features)
 print("\n \n")
-som.trainCPU(features, num_iterations=5000)
+som.trainCPU(features, num_iterations=10)
+som.weights = np.load("Groove-Explorer-2/SOM_Weights.npy")
 groove_map_info = pd.DataFrame(get_winners(features, names, som, palette_names), columns=['GrooveName',
                                                                 'PaletteName', 'X', 'Y', 'Colour'])
 source = ColumnDataSource(groove_map_info)
