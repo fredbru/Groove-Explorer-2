@@ -70,8 +70,8 @@ def get_winners(features, names, som, palette_names):
     for x, n, p, t in zip(features, names, palette_names, itemIndex):
         w = som.winner(x)
         weightMap[w] = im
-        offsetX = round(random.uniform(-0.15, 0.15),2) #small x and y offsets to stop labels being plotted on top of each other
-        offsetY = round(random.uniform(-0.15, 0.15),2)
+        offsetX = round(random.uniform(-0.20, 0.20),2) #small x and y offsets to stop labels being plotted on top of each other
+        offsetY = round(random.uniform(-0.20, 0.20),2)
 
         c='green'
         if p == 'Pop V3.bfd3pal':
@@ -105,11 +105,11 @@ def get_winners(features, names, som, palette_names):
     return winners
 
 def setup_SOM(palette_folder, dim):
-    combinedLabels = np.load('Groove-Explorer-2/Mixed_8x12' + 'Names.npy')
+    combinedLabels = np.load('Groove-Explorer-2/Mixed_8x12_Unweighted' + 'Names.npy')
     names = combinedLabels[0]
     #palette_names = os.listdir('/home/fred/BFD/python/grooves/' + sys.argv[1] + '/')
     palette_names = combinedLabels[1]
-    features = np.load('Groove-Explorer-2/Mixed_8x12' + ".npy")
+    features = np.load('Groove-Explorer-2/Mixed_8x12_Unweighted' + ".npy")
     features = features.astype(np.float32)
     a = features
     # b = (a - np.min(a)) / np.ptp(a) #this doesn't seem to work...?
@@ -118,7 +118,7 @@ def setup_SOM(palette_folder, dim):
     scaler.fit(a)
     features = scaler.transform(a)
     featureLength = features.shape[1]
-    som = MusicSOM(dim, dim, featureLength, sigma=2.0, learning_rate=0.5, perceptualWeighting=False)
+    som = MusicSOM(dim, dim, featureLength, sigma=1.5, learning_rate=0.5, perceptualWeighting=False)
     som.random_weights_init(features)
     return som, features, names, palette_names
 
@@ -133,6 +133,7 @@ def regenerate_SOM(num_iterations=20):
         new_Y = groove_map_info['Y'][i]
         source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
     print('Done')
+
 
 TAPCODE = """
 var alldata = source.data;
@@ -157,8 +158,9 @@ dim = 12
 som, features, names, palette_names = setup_SOM(palette_folder,dim)
 print(features)
 print("\n \n")
-som.trainCPU(features, num_iterations=10)
-som.weights = np.load("Groove-Explorer-2/SOM_Weights.npy")
+#som.trainCPU(features, num_iterations=150000)
+som.weights = np.load("Groove-Explorer-2/SOM_Weights_MLR_3M.npy")
+
 groove_map_info = pd.DataFrame(get_winners(features, names, som, palette_names), columns=['GrooveName',
                                                                 'PaletteName', 'X', 'Y', 'Colour'])
 source = ColumnDataSource(groove_map_info)
@@ -190,12 +192,21 @@ text_input.on_change("value", text_input_handler)
 
 
 
-bt = Button(label='Add 500 trainings')
-
-def change_click():
+train_button = Button(label='Add 500 trainings')
+def add_trainings():
     regenerate_SOM(num_iterations=100)
+train_button.on_click(add_trainings)
 
+go_back_button = Button(label='Undo Customize')
+def go_back():
+    som.revert_active_learning()
+    groove_map_info.update(pd.DataFrame(get_winners(features, names, som, palette_names),
+                                                columns=['GrooveName', 'PaletteName', 'X', 'Y', 'Colour']))
+    for i in range(94):
+        new_X = groove_map_info['X'][i]
+        new_Y = groove_map_info['Y'][i]
+        source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
 
-bt.on_click(change_click)
+go_back_button.on_click(go_back)
 
-curdoc().add_root(column(explorer,text_input, bt))
+curdoc().add_root(column(explorer,text_input, train_button, go_back_button))

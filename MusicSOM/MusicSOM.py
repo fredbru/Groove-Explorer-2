@@ -163,7 +163,13 @@ class MusicSOM(object):
         self.x = x
         self.y = y
         self.perceptual_weights = np.full(input_len, 0.5)
-        self.local_weights = np.ones(self.weights.shape)
+        #self.local_weights = np.ones(self.weights.shape)
+        coefficients = np.load("/home/fred/BFD/python/Groove-Explorer-2/Mixed_8x12_Unweighted_Coefficients.npy").reshape(1,1,input_len)
+
+        self.local_weights = np.broadcast_to(coefficients, (x,y,input_len))
+        self.active_learning_step_count = 0
+        self.local_weights_history =  []
+        self.local_weights_history.append(self.local_weights)
 
     def winner(self, x):
         """Computes the coordinates of the winning neuron for the sample x
@@ -436,32 +442,24 @@ class MusicSOM(object):
         print(self.perceptual_weights)
 
     def update_active_learning_nurnberger_local(self, groove, new_coordinates, old_coordinates):
+
         source_node = self.weights[old_coordinates[0], old_coordinates[1], :]
         target_node = self.weights[new_coordinates[0], new_coordinates[1], :]
 
-        source_error = np.absolute(groove - source_node / fast_norm(groove - source_node)).reshape(1,1,16)
-        target_error = np.absolute(groove - target_node / fast_norm(groove - target_node)).reshape(1,1,16)
+        source_error = np.absolute(groove - source_node / fast_norm(groove - source_node)).reshape(1,1,groove.shape[0])
+        target_error = np.absolute(groove - target_node / fast_norm(groove - target_node)).reshape(1,1,groove.shape[0])
 
         new_x = new_coordinates[0]
-        possible_x = new_x, new_x + 1, new_x -1
+        possible_x = new_x, new_x + 1, new_x -1 , new_x + 2, new_x - 2
         new_y = new_coordinates[1]
-        possible_y = new_y, new_y + 1, new_y -1
-
-        sigma = 5.0
+        possible_y = new_y, new_y + 1, new_y -1 , new_y + 2, new_y -2
+        print('n')
+        sigma = 16.0
         source_distance_map = self._gaussian(old_coordinates, sigma).reshape(12,12,1)
         target_distance_map = self._gaussian(new_coordinates, sigma).reshape(12,12,1)
-        print("sdm shape = ", source_distance_map.shape)
-        print("se shape = ", source_error.shape)
-        print("local weights shape = ", self.local_weights.shape)
 
-        learning_rate = 0.00001
-        print(source_distance_map)
-        print(target_distance_map)
-        for i in range(10000):
-            if i %10 == 0:
-                #print(self.local_weights[new_x, new_y,:], new_x, new_y)
-                print(self.winner(groove))
-                print(i)
+        learning_rate = 0.001
+        for i in range(20000):
             winner = self.winner(groove)
             winner_x = winner[0]
             winner_y = winner[1]
@@ -473,8 +471,23 @@ class MusicSOM(object):
                 # source_error = input_len
                 # source/target_distance_map = x,y
                 old_weights = self.local_weights.copy()
-                addition = (learning_rate * ((source_error*source_distance_map) - (target_error*target_distance_map)))
                 x = old_weights + (learning_rate * ((source_error*source_distance_map) - (target_error*target_distance_map)))
                 self.local_weights =  x / np.max(x)
-                # print("localweights= ", self.local_weights)
-                print("localweights= ", self.local_weights[new_x, new_y, :])
+                # print("localweights= ", self.local_weights[new_x, new_y, :])
+
+        self.active_learning_step_count += 1
+        self.local_weights_history.append(self.local_weights)
+
+        for i in range(2):
+            randomItem = groove
+            winner = self.winner(randomItem)
+            g = self.getUpdateFunction(winner, 1,1)
+            self.update(randomItem, 1, g, 1)
+
+
+    def revert_active_learning(self):
+        if self.active_learning_step_count > 0:
+            self.local_weights = self.local_weights_history[self.active_learning_step_count - 1]
+            del(self.local_weights_history[self.active_learning_step_count])
+            self.active_learning_step_count -= 1
+
