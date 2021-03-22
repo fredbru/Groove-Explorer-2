@@ -4,13 +4,14 @@ from MusicSOM.MusicSOM import *
 import random
 from bokeh.layouts import column, row
 from bokeh.plotting import figure
-from bokeh.models import ColumnDataSource, Panel, Tabs
+from bokeh.models import ColumnDataSource, Panel, Tabs, RadioGroup, MultiSelect
 from bokeh.models.tools import HoverTool, TapTool, PointDrawTool
 from bokeh.models.callbacks import CustomJS
 from bokeh.events import PanEnd
 from bokeh.models import Button
 from bokeh.io import curdoc
 from sklearn import preprocessing
+import os
 
 
 np.set_printoptions(suppress=True, precision=6)
@@ -196,17 +197,67 @@ def make_explorer(data_file='Part_1_Unweighted', explorer_type='Customised'):
         explorer.on_event(PanEnd, pan_python_callback)
         go_back_button = Button(label='Undo Customize')
         go_back_button.on_click(go_back)
-
         return column(explorer, go_back_button)
     else:
         return explorer
 
+def make_list_panel():
 
-part_1_explorer = make_explorer(data_file='Part_1_Unweighted', explorer_type='Static')
-explorer_tab = Panel(child=part_1_explorer, title="Part 1 - Groove Explorer Static")
+    def get_files(index, labels):
+        palette_files = os.listdir('Groove-Explorer-2/static/Part 1 MP3 - Seperate Folders/' + labels[index] + '/')
+        groove_names = [x[:-4] for x in palette_files]
+        return groove_names
 
-part_2_explorer = make_explorer(data_file='Part_2_Unweighted', explorer_type='Customised')
-customised_explorer_tab = Panel(child=part_2_explorer
-                                , title="Part 2 - Customised Groove Explorer")
-tabs = Tabs(tabs=[explorer_tab, customised_explorer_tab])
+    labels = ['Pop V3', 'Smooth Jazz', 'Peter Erskine Rock', 'Stanton Moore JB', 'AFJ Rock', 'Reggae Grooves V2',
+              'HHM Jungle V1', 'Early RnB', 'Peter Erskine Jazz', 'Chicago Blues', 'Steve Ferrone Rock V1', 'Brooks Punk V1']
+
+    opts = {
+        0: get_files(0, labels),
+        1: get_files(1, labels),
+        2: get_files(2, labels),
+        3: get_files(3, labels),
+        4: get_files(4, labels),
+        5: get_files(5, labels),
+        6: get_files(6, labels),
+        7: get_files(7, labels),
+        8: get_files(8, labels),
+        9: get_files(9, labels),
+        10: get_files(10, labels),
+        11: get_files(1, labels),
+    }
+
+    PLAY_AUDIO = """
+        var filetype = ".mp3";
+        var directory = "Groove-Explorer-2/static/ALL/";
+        var groovename = directory.concat(this.value, filetype);
+        console.log(groovename)
+        if (groovename != "undefined")
+        {
+            var audio = new Audio(groovename);
+            audio.play();
+            console.log("Playing " + groovename + "...");
+            }
+        """
+
+    groove_file_select = MultiSelect(options=opts[0], height_policy="fit")
+    groove_file_select.js_on_change('value', CustomJS(code=PLAY_AUDIO))
+
+    palette_button_group = RadioGroup(labels=labels, active=0)
+    palette_button_group.js_on_change('active', CustomJS(args=dict(ms=groove_file_select), code="""
+    const opts = %s
+    ms.options = opts[cb_obj.active]
+""" % opts))
+
+    return row(palette_button_group, groove_file_select)
+
+
+list_panel = make_list_panel()
+list_tab = Panel(child=list_panel, title="File Browser")
+
+explorer_part_1 = make_explorer(data_file='Part_1_Unweighted', explorer_type='Static')
+explorer_tab = Panel(child=explorer_part_1, title="Groove Explorer Part 1 - Static")
+
+explorer_part_2 = make_explorer(data_file='Part_2_Unweighted', explorer_type='Customised')
+customised_explorer_tab = Panel(child=explorer_part_2, title="Groove Explorer Part 2 - Customised")
+tabs = Tabs(tabs=[list_tab, explorer_tab, customised_explorer_tab])
 curdoc().add_root(tabs)
