@@ -233,12 +233,38 @@ def make_list_panel():
         console.log(groovename)
         if (groovename != "undefined")
         {
-            var audio = new Audio(groovename);
-            audio.play();
+            var audio_to_play = document.createElement('audio');
+            audio_to_play.id       = 'playing_audio';
+            audio_to_play.controls = 'controls';
+            audio_to_play.src      = groovename;
+            audio_to_play.play();
             console.log("Playing " + groovename + "...");
+            var audio_tag_name = audio_to_play.tagName;
+            console.log(audio_tag_name);
+            //console.log(audio_to_play);
+            var audio_tags = document.getElementsByTagName("*");
+            console.log(audio_tags.length);
+            console.log(audio_tags);
             }
-        """
+        for (var player in mejs.players) {
+            mejs.players[player].media.stop();
+        }
 
+        """
+    # PLAY_AUDIO = """
+    #     var filetype = ".mp3";
+    #     var directory = "Groove-Explorer-2/static/ALL/";
+    #     var groovename = directory.concat(this.value, filetype);
+    #     console.log(groovename)
+    #     if (groovename != "undefined")
+    #     {
+    #         var audio = new Audio(groovename);
+    #         audio.play();
+    #         console.log("Playing " + groovename + "...");
+    #         console.log(audio);
+    #         console.log(document.getElementsByTagName('audio'));
+    #         }
+    #     """
     groove_file_select = MultiSelect(options=opts[0], height_policy="fit")
     groove_file_select.js_on_change('value', CustomJS(code=PLAY_AUDIO))
 
