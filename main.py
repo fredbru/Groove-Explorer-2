@@ -4,7 +4,7 @@ from MusicSOM.MusicSOM import *
 import random
 from bokeh.layouts import column, row
 from bokeh.plotting import figure
-from bokeh.models import ColumnDataSource, Panel, Tabs, RadioGroup, MultiSelect
+from bokeh.models import ColumnDataSource, Panel, Tabs, RadioGroup, MultiSelect, RadioButtonGroup
 from bokeh.models.tools import HoverTool, TapTool, PointDrawTool
 from bokeh.models.callbacks import CustomJS
 from bokeh.events import PanEnd
@@ -12,6 +12,7 @@ from bokeh.models import Button
 from bokeh.io import curdoc
 from sklearn import preprocessing
 import os
+import audio_player
 
 
 np.set_printoptions(suppress=True, precision=6)
@@ -111,22 +112,6 @@ def regenerate_SOM(num_iterations=20):
 
 
 def make_explorer(data_file='Part_1_Unweighted', explorer_type='Customised'):
-    PLAY_AUDIO_EXPLORER = """
-    var alldata = source.data;
-    var selected = source.selected.indices;
-    console.log(selected)
-    var groovename = alldata['GrooveName'][selected[0]];
-    var filetype = ".mp3";
-    var directory = "Groove-Explorer-2/static/ALL/";
-    var file = directory.concat(groovename, filetype);
-    console.log(groovename)
-    if (groovename != "undefined")
-    {
-        var audio = new Audio(file);
-        audio.play();
-        console.log("Playing " + groovename + "...");
-        }
-    """
 
     def go_back():
         som.revert_active_learning()
@@ -164,6 +149,15 @@ def make_explorer(data_file='Part_1_Unweighted', explorer_type='Customised'):
             source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
         print('Done')
 
+    def play_audio_callback(attr,old,new):
+        selection_index = source.selected.indices
+        selection = source.data['GrooveName'][selection_index[0]]
+        file_name = 'Groove-Explorer-2/static/ALL/'+ selection + '.mp3'
+        player.stop_audio()
+        player.play_audio(file_name)
+
+    player = audio_player.audio_player()
+
     dim = 12
     som, features, names, palette_names = setup_SOM(data_file, dim)
     som.weights = np.load("Groove-Explorer-2/SOM_Weights_MLR_3M.npy")
@@ -179,17 +173,17 @@ def make_explorer(data_file='Part_1_Unweighted', explorer_type='Customised'):
         ('Palette', '@PaletteName'),
     ]
 
-    TOOLS = "crosshair, wheel_zoom"
+    TOOLS = "crosshair, wheel_zoom, tap"
     explorer = figure(x_range
                       =(-1, dim), y_range=(-1, dim), tools=TOOLS, title='Groove Explorer 2')
 
-    tap = TapTool()
-    tap.callback = CustomJS(code=PLAY_AUDIO_EXPLORER, args=dict(source=source))
+
     explorer.add_tools(hover)
-    explorer.add_tools(tap)
 
     renderer = explorer.circle(source=source, x='X', y='Y', color='Colour', fill_alpha=0.6, size=15,
                                hover_fill_color='yellow', hover_alpha=1, nonselection_alpha=0.6)
+
+    renderer.data_source.selected.on_change('indices', play_audio_callback)
 
     if explorer_type == 'Customised':
         point_drag = PointDrawTool(renderers=[renderer], add=False)
@@ -203,78 +197,48 @@ def make_explorer(data_file='Part_1_Unweighted', explorer_type='Customised'):
 
 def make_list_panel():
 
+    path = 'Groove-Explorer-2/static/Part 1 MP3 - Seperate Folders/'
+
     def get_files(index, labels):
-        palette_files = os.listdir('Groove-Explorer-2/static/Part 1 MP3 - Seperate Folders/' + labels[index] + '/')
+        palette_files = os.listdir(path + labels[index] + '/')
         groove_names = [x[:-4] for x in palette_files]
         return groove_names
 
-    labels = ['Pop V3', 'Smooth Jazz', 'Peter Erskine Rock', 'Stanton Moore JB', 'AFJ Rock', 'Reggae Grooves V2',
+    def groove_selection_handler(attr, old, new):
+        selection = groove_file_select.labels[new]
+        file_name = 'Groove-Explorer-2/static/ALL/'+ selection + '.mp3'
+        player.stop_audio()
+        player.play_audio(file_name)
+
+    player = audio_player.audio_player()
+    palette_labels = ['Pop V3', 'Smooth Jazz', 'Peter Erskine Rock', 'Stanton Moore JB', 'AFJ Rock', 'Reggae Grooves V2',
               'HHM Jungle V1', 'Early RnB', 'Peter Erskine Jazz', 'Chicago Blues', 'Steve Ferrone Rock V1', 'Brooks Punk V1']
 
     opts = {
-        0: get_files(0, labels),
-        1: get_files(1, labels),
-        2: get_files(2, labels),
-        3: get_files(3, labels),
-        4: get_files(4, labels),
-        5: get_files(5, labels),
-        6: get_files(6, labels),
-        7: get_files(7, labels),
-        8: get_files(8, labels),
-        9: get_files(9, labels),
-        10: get_files(10, labels),
-        11: get_files(1, labels),
+        0: get_files(0, palette_labels),
+        1: get_files(1, palette_labels),
+        2: get_files(2, palette_labels),
+        3: get_files(3, palette_labels),
+        4: get_files(4, palette_labels),
+        5: get_files(5, palette_labels),
+        6: get_files(6, palette_labels),
+        7: get_files(7, palette_labels),
+        8: get_files(8, palette_labels),
+        9: get_files(9, palette_labels),
+        10: get_files(10, palette_labels),
+        11: get_files(1, palette_labels),
     }
 
-    PLAY_AUDIO = """
-        var filetype = ".mp3";
-        var directory = "Groove-Explorer-2/static/ALL/";
-        var groovename = directory.concat(this.value, filetype);
-        console.log(groovename)
-        if (groovename != "undefined")
-        {
-            var audio_to_play = document.createElement('audio');
-            audio_to_play.id       = 'playing_audio';
-            audio_to_play.controls = 'controls';
-            audio_to_play.src      = groovename;
-            audio_to_play.play();
-            console.log("Playing " + groovename + "...");
-            var audio_tag_name = audio_to_play.tagName;
-            console.log(audio_tag_name);
-            //console.log(audio_to_play);
-            var audio_tags = document.getElementsByTagName("*");
-            console.log(audio_tags.length);
-            console.log(audio_tags);
-            }
-        for (var player in mejs.players) {
-            mejs.players[player].media.stop();
-        }
+    groove_file_select = RadioGroup(labels=opts[0], height_policy="auto", sizing_mode='scale_width')
+    groove_file_select.on_change('active', groove_selection_handler)
 
-        """
-    # PLAY_AUDIO = """
-    #     var filetype = ".mp3";
-    #     var directory = "Groove-Explorer-2/static/ALL/";
-    #     var groovename = directory.concat(this.value, filetype);
-    #     console.log(groovename)
-    #     if (groovename != "undefined")
-    #     {
-    #         var audio = new Audio(groovename);
-    #         audio.play();
-    #         console.log("Playing " + groovename + "...");
-    #         console.log(audio);
-    #         console.log(document.getElementsByTagName('audio'));
-    #         }
-    #     """
-    groove_file_select = MultiSelect(options=opts[0], height_policy="fit")
-    groove_file_select.js_on_change('value', CustomJS(code=PLAY_AUDIO))
 
-    palette_button_group = RadioGroup(labels=labels, active=0)
-    palette_button_group.js_on_change('active', CustomJS(args=dict(ms=groove_file_select), code="""
+    palette_file_select = RadioGroup(labels=palette_labels, active=0, sizing_mode='scale_width')
+    palette_file_select.js_on_change('active', CustomJS(args=dict(ms=groove_file_select), code="""
     const opts = %s
-    ms.options = opts[cb_obj.active]
+    ms.labels = opts[cb_obj.active]
 """ % opts))
-
-    return row(palette_button_group, groove_file_select)
+    return row(palette_file_select, groove_file_select)
 
 
 list_panel = make_list_panel()
