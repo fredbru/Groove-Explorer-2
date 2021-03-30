@@ -28,7 +28,6 @@ def text_input_handler(attr, old, new):
     except ValueError:
         print("Please enter a valid number")
 
-
 def make_node_locations(dim):
     xNodePoints = np.arange(dim+1)
     yNodePoints = np.arange(dim+1)
@@ -110,8 +109,8 @@ def regenerate_SOM(num_iterations=20):
         source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
     print('Done')
 
-
 def make_explorer(data_file='Part_1_Unweighted', explorer_type='Customised'):
+    #'Customised', 'Small', 'Big'
 
     def go_back():
         som.revert_active_learning()
@@ -151,21 +150,29 @@ def make_explorer(data_file='Part_1_Unweighted', explorer_type='Customised'):
 
     def play_audio_callback(attr,old,new):
         selection_index = source.selected.indices
-        selection = source.data['GrooveName'][selection_index[0]]
-        file_name = 'Groove-Explorer-2/static/ALL/'+ selection + '.mp3'
+        groove_name = source.data['GrooveName'][selection_index[0]]
+        palette_name = source.data['PaletteName'][selection_index[0]]
+        file_name = 'Groove-Explorer-2/static/Big_Dataset_1-2-3-4/'+ palette_name + '/' + groove_name + '.mp3'
         player.stop_audio()
         player.play_audio(file_name)
 
     player = audio_player.audio_player()
 
-    dim = 12
-    som, features, names, palette_names = setup_SOM(data_file, dim)
-    som.weights = np.load("Groove-Explorer-2/SOM_Weights_MLR_3M.npy")
+    if explorer_type in ['Customised', 'Small']:
+        dim = 12
+        som, features, names, palette_names = setup_SOM(data_file, dim)
+        som.weights = np.load("Groove-Explorer-2/SOM_Weights_MLR_3M_ALL.npy")
+        groove_map_info = pd.DataFrame(get_winners(features, names, som, palette_names),
+                                       columns=['GrooveName','PaletteName', 'X', 'Y','Colour'])
+        source = ColumnDataSource(groove_map_info)
+    elif explorer_type == 'Big':
+        dim = 24
+        som, features, names, palette_names = setup_SOM(data_file, dim)
+        som.weights = np.load("Groove-Explorer-2/SOM_Weights_MLR_3M_BIG.npy")
+        groove_map_info = pd.DataFrame(get_winners(features, names, som, palette_names),
+                                       columns=['GrooveName', 'PaletteName', 'X', 'Y', 'Colour'])
+        source = ColumnDataSource(groove_map_info)
 
-    groove_map_info = pd.DataFrame(get_winners(features, names, som, palette_names), columns=['GrooveName',
-                                                                                              'PaletteName', 'X', 'Y',
-                                                                                              'Colour'])
-    source = ColumnDataSource(groove_map_info)
 
     hover = HoverTool()
     hover.tooltips = [
@@ -195,6 +202,7 @@ def make_explorer(data_file='Part_1_Unweighted', explorer_type='Customised'):
     else:
         return explorer
 
+
 def make_list_panel():
 
     path = 'Groove-Explorer-2/static/Part 1 MP3 - Seperate Folders/'
@@ -205,8 +213,10 @@ def make_list_panel():
         return groove_names
 
     def groove_selection_handler(attr, old, new):
-        selection = groove_file_select.labels[new]
-        file_name = 'Groove-Explorer-2/static/ALL/'+ selection + '.mp3'
+        groove_name = groove_file_select.labels[new]
+        palette_name_index = palette_file_select.active
+        palette_name = palette_labels[palette_name_index]
+        file_name = path + palette_name + '/' + groove_name + '.mp3'
         player.stop_audio()
         player.play_audio(file_name)
 
@@ -244,10 +254,14 @@ def make_list_panel():
 list_panel = make_list_panel()
 list_tab = Panel(child=list_panel, title="File Browser")
 
-explorer_part_1 = make_explorer(data_file='Part_1_Unweighted', explorer_type='Static')
-explorer_tab = Panel(child=explorer_part_1, title="Groove Explorer Part 1 - Static")
+explorer_part_1 = make_explorer(data_file='Part_1_Unweighted', explorer_type='Small')
+small_explorer_tab = Panel(child=explorer_part_1, title="Groove Explorer Part 1 - Small")
 
 explorer_part_2 = make_explorer(data_file='Part_2_Unweighted', explorer_type='Customised')
 customised_explorer_tab = Panel(child=explorer_part_2, title="Groove Explorer Part 2 - Customised")
-tabs = Tabs(tabs=[list_tab, explorer_tab, customised_explorer_tab])
+
+#explorer_part_3 = make_explorer(data_file='BIG_', explorer_type='Big')
+#big_explorer_tab = Panel(child=explorer_part_2, title="Groove Explorer Part 3 - Big")
+
+tabs = Tabs(tabs=[list_tab, small_explorer_tab, customised_explorer_tab])
 curdoc().add_root(tabs)
