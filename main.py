@@ -143,6 +143,8 @@ def setup_SOM(data, dim):
 def make_explorer(data_file, explorer_type='Customised'):
     #explorer_type options: 'Customised', 'Small', 'Big'
 
+    selected_audio = {'active': 'A'}
+
     def go_back():
         som.revert_active_learning()
         groove_map_info.update(pd.DataFrame(get_winners(features, names, som, palette_names),
@@ -187,6 +189,29 @@ def make_explorer(data_file, explorer_type='Customised'):
         player.stop_audio()
         player.play_audio(file_name)
 
+    def play_button_callback():
+        if explorer_type == 'Small':
+            file_path = 'Groove-Explorer-2/static/Test Audio/Groove Explorer Part 1 - Small/' + selected_audio['active'] + '.mp3'
+
+        if explorer_type == 'Customised':
+            file_path = 'Groove-Explorer-2/static/Test Audio/Groove Explorer Part 2 - Customisable/' + selected_audio['active'] + '.mp3'
+        player.stop_audio()
+        player.play_audio(file_path)
+
+    def audio_selector_handler(attr,old,new):
+        labels = ['A', 'B', 'C', 'D', 'E']
+        selected_audio['active'] = labels[new]
+
+    def make_audio_panel():
+        labels = ['A', 'B', 'C', 'D', 'E']
+        audio_selector = RadioGroup(labels=labels, height_policy="auto", sizing_mode='scale_width', active=0)
+        audio_selector.on_change('active', audio_selector_handler)
+        print(audio_selector.active)
+        play_button = Button(label='Play')
+        play_button.on_click(play_button_callback)
+        audio_panel = column(audio_selector, play_button)
+        return audio_panel
+
     player = audio_player.audio_player()
     hover = HoverTool()
     hover.tooltips = [
@@ -220,6 +245,9 @@ def make_explorer(data_file, explorer_type='Customised'):
 
 
     explorer.add_tools(hover)
+
+    audio_selector = make_audio_panel()
+
     renderer = explorer.circle(source=source, x='X', y='Y', color='Colour', fill_alpha=0.6, size=15,
                                hover_fill_color='yellow', hover_alpha=1, nonselection_alpha=0.6)
     renderer.data_source.selected.on_change('indices', play_audio_callback)
@@ -231,9 +259,9 @@ def make_explorer(data_file, explorer_type='Customised'):
         go_back_button = Button(label='Undo Customize')
         go_back_button.on_click(go_back)
 
-        return column(explorer, go_back_button)
+        return row(column(explorer, go_back_button), audio_selector)
     else:
-        return explorer
+        return row(explorer, audio_selector)
 
 
 def make_list_panel():
@@ -296,4 +324,5 @@ explorer_part_3 = make_explorer(data_file='BIG_', explorer_type='Big')
 big_explorer_tab = Panel(child=explorer_part_3, title="Groove Explorer Part 3 - Big")
 
 tabs = Tabs(tabs=[list_tab, small_explorer_tab, customised_explorer_tab, big_explorer_tab])
+
 curdoc().add_root(tabs)
