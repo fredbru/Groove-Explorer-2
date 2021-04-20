@@ -231,6 +231,7 @@ def make_explorer(data_file, explorer_type='Customised'):
                                        columns=['GrooveName','PaletteName', 'X', 'Y','Colour'])
         source = ColumnDataSource(groove_map_info)
         explorer = figure(x_range=(-1, dim), y_range=(-1, dim), tools=TOOLS, title='Groove Explorer 2')
+        audio_selector = make_audio_panel()
 
 
     elif explorer_type == 'Big':
@@ -246,8 +247,6 @@ def make_explorer(data_file, explorer_type='Customised'):
 
     explorer.add_tools(hover)
 
-    audio_selector = make_audio_panel()
-
     renderer = explorer.circle(source=source, x='X', y='Y', color='Colour', fill_alpha=0.6, size=15,
                                hover_fill_color='yellow', hover_alpha=1, nonselection_alpha=0.6)
     renderer.data_source.selected.on_change('indices', play_audio_callback)
@@ -260,13 +259,17 @@ def make_explorer(data_file, explorer_type='Customised'):
         go_back_button.on_click(go_back)
 
         return row(column(explorer, go_back_button), audio_selector)
-    else:
+    elif explorer_type == 'Small':
         return row(explorer, audio_selector)
+    elif explorer_type == 'Big':
+        return explorer
 
 
 def make_list_panel():
 
     path = 'Groove-Explorer-2/static/Part 4 MP3 - Seperate Folders/'
+
+    selected_test_audio = {'active': 'A'}
 
     def get_files(index, labels):
         palette_files = os.listdir(path + labels[index] + '/')
@@ -280,6 +283,24 @@ def make_list_panel():
         file_name = path + palette_name + '/' + groove_name + '.mp3'
         player.stop_audio()
         player.play_audio(file_name)
+
+    def play_button_callback():
+        file_path = 'Groove-Explorer-2/static/Test Audio/List Interface/' + selected_test_audio['active'] + '.mp3'
+        player.stop_audio()
+        player.play_audio(file_path)
+
+    def audio_selector_handler(attr,old,new):
+        labels = ['A', 'B', 'C', 'D', 'E']
+        selected_test_audio['active'] = labels[new]
+
+    def make_audio_panel():
+        labels = ['A', 'B', 'C', 'D', 'E']
+        audio_selector = RadioGroup(labels=labels, height_policy="auto", sizing_mode='scale_width', active=0)
+        audio_selector.on_change('active', audio_selector_handler)
+        play_button = Button(label='Play Target Loop')
+        play_button.on_click(play_button_callback)
+        audio_panel = column(audio_selector, play_button)
+        return audio_panel
 
     player = audio_player.audio_player()
     palette_labels = os.listdir(path)
@@ -308,7 +329,10 @@ def make_list_panel():
     const opts = %s
     ms.labels = opts[cb_obj.active]
 """ % opts))
-    return row(palette_file_select, groove_file_select)
+
+    audio_panel = make_audio_panel()
+
+    return row(palette_file_select, groove_file_select, audio_panel)
 
 
 list_panel = make_list_panel()
