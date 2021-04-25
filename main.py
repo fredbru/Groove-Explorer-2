@@ -198,6 +198,9 @@ def make_explorer(data_file, explorer_type='Customised'):
         player.stop_audio()
         player.play_audio(file_path)
 
+    def stop_button_callback():
+        player.stop_audio()
+
     def audio_selector_handler(attr,old,new):
         labels = ['A', 'B', 'C', 'D', 'E']
         selected_audio['active'] = labels[new]
@@ -209,7 +212,9 @@ def make_explorer(data_file, explorer_type='Customised'):
         print(audio_selector.active)
         play_button = Button(label='Play')
         play_button.on_click(play_button_callback)
-        audio_panel = column(audio_selector, play_button)
+        stop_button = Button(label='Stop')
+        stop_button.on_click(stop_button_callback)
+        audio_panel = column(audio_selector, play_button, stop_button)
         return audio_panel
 
     player = audio_player.audio_player()
@@ -289,6 +294,9 @@ def make_list_panel():
         player.stop_audio()
         player.play_audio(file_path)
 
+    def stop_button_callback():
+        player.stop_audio()
+
     def audio_selector_handler(attr,old,new):
         labels = ['A', 'B', 'C', 'D', 'E']
         selected_test_audio['active'] = labels[new]
@@ -297,9 +305,11 @@ def make_list_panel():
         labels = ['A', 'B', 'C', 'D', 'E']
         audio_selector = RadioGroup(labels=labels, height_policy="auto", sizing_mode='scale_width', active=0)
         audio_selector.on_change('active', audio_selector_handler)
-        play_button = Button(label='Play Target Loop')
+        play_button = Button(label='Play')
         play_button.on_click(play_button_callback)
-        audio_panel = column(audio_selector, play_button)
+        stop_button = Button(label='Stop')
+        stop_button.on_click(stop_button_callback)
+        audio_panel = column(audio_selector, play_button, stop_button)
         return audio_panel
 
     player = audio_player.audio_player()
