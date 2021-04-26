@@ -38,8 +38,8 @@ def get_winners(features, names, som, palette_names):
     for x, n, p, t in zip(features, names, palette_names, itemIndex):
         w = som.winner(x)
         weightMap[w] = im
-        offsetX = round(random.uniform(-0.20, 0.20),2) #small x and y offsets to stop labels being plotted on top of each other
-        offsetY = round(random.uniform(-0.20, 0.20),2)
+        offsetX = round(random.uniform(-0.27, 0.27),2) #small x and y offsets to stop labels being plotted on top of each other
+        offsetY = round(random.uniform(-0.27, 0.27),2)
 
         c='white'
         if p == 'Pop V3.bfd3pal':
@@ -74,7 +74,7 @@ def get_winners(features, names, som, palette_names):
         if p == 'HHM Rave.bfd3pal':
             c = 'darkmagenta'
         if p == 'Jazz Walk Sticks.bfd3pal':
-            c = 'coral'
+            c = 'darkkhaki'
         if p == 'Essential Swing.bfd3pal':
             c = 'darkorange'
         if p == 'Pop V1.bfd3pal':
@@ -82,7 +82,7 @@ def get_winners(features, names, som, palette_names):
         if p == 'Blues.bfd3pal':
             c = 'maroon'
         if p == 'Texas Blues.bfd3pal':
-            c = 'peru'
+            c = 'sienna'
         if p == 'Essential Alternative Rock.bfd3pal':
             c = 'darkturquoise'
         if p == 'Bobby Jarzombek Rock.bfd3pal':
@@ -223,7 +223,7 @@ def make_explorer(data_file, explorer_type='Customised'):
         ('Name', '@GrooveName'),
         ('Palette', '@PaletteName'),
     ]
-    TOOLS = "crosshair, wheel_zoom, tap"
+    TOOLS = "crosshair, wheel_zoom, tap, pan, reset"
 
     if explorer_type in ['Small','Customised']:
         dim = 12
@@ -327,7 +327,7 @@ def make_list_panel():
         8: get_files(8, palette_labels),
         9: get_files(9, palette_labels),
         10: get_files(10, palette_labels),
-        11: get_files(1, palette_labels),
+        11: get_files(11, palette_labels),
     }
 
     groove_file_select = RadioGroup(labels=opts[0], height_policy="auto", sizing_mode='scale_width')
