@@ -4,8 +4,8 @@ from warnings import warn
 from numba import cuda
 import math
 import timeit
-import cvxpy as cvx
-import dccp
+#import cvxpy as cvx
+#import dccp
 
 """ Self-Organising Map library by Fred Bruford
     Functionality for both GPU and CPU computation. CPU computation will work on any machine, GPU should but may have
@@ -110,7 +110,7 @@ def GPUSOM(weights, activation_map, data, ax, ay,g,iterations,random,randomItem,
 
 class MusicSOM(object):
     def __init__(self, x, y, input_len, sigma=1.0, learning_rate=0.5,
-                  perceptualWeighting=True, random_seed=11):
+                  perceptualWeighting=True, random_seed=11, coefficients_file='BIG_Coefficients.npy'):
 
         """Initializes a Self Organizing Map.
         Parameters
@@ -164,7 +164,8 @@ class MusicSOM(object):
         self.y = y
         self.perceptual_weights = np.full(input_len, 0.5)
         #self.local_weights = np.ones(self.weights.shape)
-        coefficients = np.load("/home/fred/BFD/python/Groove-Explorer-2/Mixed_8x12_Unweighted_Coefficients.npy").reshape(1,1,input_len)
+        path = "/home/fred/BFD/python/Groove-Explorer-2/"
+        coefficients = np.load(path+coefficients_file).reshape(1,1,input_len)
 
         self.local_weights = np.broadcast_to(coefficients, (x,y,input_len))
         self.active_learning_step_count = 0
@@ -355,65 +356,65 @@ class MusicSOM(object):
             winmap[self.winner(x)].append(x)
         return winmap
 
-    def update_active_learning_quadratic(self, groove, new_coordinates, old_coordinates):
-        # Perform active learning from a single movement
-        old_weights = self.perceptual_weights
-        q = -old_weights
-        P = np.identity(groove.shape[0])
-
-        #A = (groove-self.weights[old_coordinates[0],old_coordinates[1],:]) - \
-        #    (groove-self.weights[new_coordinates[0],new_coordinates[1],:])
-        #print('A= ', A)
-
-        # need to change this constraint - for d1 to not just be larger than d2 but larger than
-        # all other distancess
-        x = cvx.Variable(groove.shape[0], nonneg=True)
-
-        target_d = groove-self.weights[new_coordinates[0],new_coordinates[1],:]
-        target_d_sum = cvx.norm(cvx.multiply(target_d, x))
-        constraints = []
-        node_d = []
-        node_d_sum = []
-        it = np.nditer(self.activation_map, flags=['multi_index'])
-        i=0
-        while not it.finished:
-            if [it.multi_index[0], it.multi_index[1]] != [new_coordinates[0], new_coordinates[1]]:
-                node_d.append(groove - self.weights[it.multi_index[0],
-                                                        it.multi_index[1], :])
-                node_d_sum.append(cvx.norm(cvx.multiply(node_d[i], x)))
-                #print("node d sum ", i, " is DCP? = ", node_d_sum[i].is_dcp())
-                #print("node d curve ", node_d_sum[i].curvature)
-                #print("target d curve ", target_d_sum.curvature)
-
-                diff = node_d_sum[i] - target_d_sum
-
-                #print("difference curve ", diff.curvature)
-
-                #print('node d sum', node_d_sum[i].size, node_d_sum[i].is_scalar())
-                #print("Diff is scalar? ", diff.is_scalar())
-                #constraints += [(-1.0 * node_d_sum[i]) >= (-1.0*target_d_sum)]
-                #constraints += [diff >= 0.0]
-                constraints += [node_d_sum[i] >= target_d_sum] # need to do 2 norm..?
-                # print("constraints = dcp? ", constraints[i].is_dcp())
-         #       constraints += [cp.sum(node_distance[i] @ x) >= cp.sum(target_d @ x)] # need to do 2 norm..?
-                i+=1
-            it.iternext()
-        constraints+=[0.00<=x]
-        constraints+=[x<=1.0]
-        problem = cvx.Problem(cvx.Minimize((1/2)*cvx.quad_form(x,P) + q.T @ x),constraints)
-                             # [ds@x >= d2@x,
-                             #  #A @ x <= u,
-                             #  0.00001 <= x,
-                             #  x <= 1])
-        print("Problem = DCCP? ", dccp.is_dccp(problem))
-        problem.solve(method='dccp', max_iter=100)
-        print("status:", problem.status)
-        print("optimal value", problem.value)
-        new_x = x.value
-        print("x = ", new_x)
-        self.perceptual_weights = new_x
-        print('result =', self.winner(groove))
-        # need to incorporate perceptual weighting into som map
+    # def update_active_learning_quadratic(self, groove, new_coordinates, old_coordinates):
+    #     # Perform active learning from a single movement
+    #     old_weights = self.perceptual_weights
+    #     q = -old_weights
+    #     P = np.identity(groove.shape[0])
+    #
+    #     #A = (groove-self.weights[old_coordinates[0],old_coordinates[1],:]) - \
+    #     #    (groove-self.weights[new_coordinates[0],new_coordinates[1],:])
+    #     #print('A= ', A)
+    #
+    #     # need to change this constraint - for d1 to not just be larger than d2 but larger than
+    #     # all other distancess
+    #     x = cvx.Variable(groove.shape[0], nonneg=True)
+    #
+    #     target_d = groove-self.weights[new_coordinates[0],new_coordinates[1],:]
+    #     target_d_sum = cvx.norm(cvx.multiply(target_d, x))
+    #     constraints = []
+    #     node_d = []
+    #     node_d_sum = []
+    #     it = np.nditer(self.activation_map, flags=['multi_index'])
+    #     i=0
+    #     while not it.finished:
+    #         if [it.multi_index[0], it.multi_index[1]] != [new_coordinates[0], new_coordinates[1]]:
+    #             node_d.append(groove - self.weights[it.multi_index[0],
+    #                                                     it.multi_index[1], :])
+    #             node_d_sum.append(cvx.norm(cvx.multiply(node_d[i], x)))
+    #             #print("node d sum ", i, " is DCP? = ", node_d_sum[i].is_dcp())
+    #             #print("node d curve ", node_d_sum[i].curvature)
+    #             #print("target d curve ", target_d_sum.curvature)
+    #
+    #             diff = node_d_sum[i] - target_d_sum
+    #
+    #             #print("difference curve ", diff.curvature)
+    #
+    #             #print('node d sum', node_d_sum[i].size, node_d_sum[i].is_scalar())
+    #             #print("Diff is scalar? ", diff.is_scalar())
+    #             #constraints += [(-1.0 * node_d_sum[i]) >= (-1.0*target_d_sum)]
+    #             #constraints += [diff >= 0.0]
+    #             constraints += [node_d_sum[i] >= target_d_sum] # need to do 2 norm..?
+    #             # print("constraints = dcp? ", constraints[i].is_dcp())
+    #      #       constraints += [cp.sum(node_distance[i] @ x) >= cp.sum(target_d @ x)] # need to do 2 norm..?
+    #             i+=1
+    #         it.iternext()
+    #     constraints+=[0.00<=x]
+    #     constraints+=[x<=1.0]
+    #     problem = cvx.Problem(cvx.Minimize((1/2)*cvx.quad_form(x,P) + q.T @ x),constraints)
+    #                          # [ds@x >= d2@x,
+    #                          #  #A @ x <= u,
+    #                          #  0.00001 <= x,
+    #                          #  x <= 1])
+    #     print("Problem = DCCP? ", dccp.is_dccp(problem))
+    #     problem.solve(method='dccp', max_iter=100)
+    #     print("status:", problem.status)
+    #     print("optimal value", problem.value)
+    #     new_x = x.value
+    #     print("x = ", new_x)
+    #     self.perceptual_weights = new_x
+    #     print('result =', self.winner(groove))
+    #     # need to incorporate perceptual weighting into som map
 
     def update_active_learning_nurnberger_global(self, groove, new_coordinates, old_coordinates):
         source_node = self.weights[old_coordinates[0],old_coordinates[1],:]
@@ -450,9 +451,9 @@ class MusicSOM(object):
         target_error = np.absolute(groove - target_node / fast_norm(groove - target_node)).reshape(1,1,groove.shape[0])
 
         new_x = new_coordinates[0]
-        possible_x = new_x, new_x + 1, new_x -1 , new_x + 2, new_x - 2
+        possible_x = new_x, new_x + 1, new_x -1 #, new_x + 2, new_x - 2
         new_y = new_coordinates[1]
-        possible_y = new_y, new_y + 1, new_y -1 , new_y + 2, new_y -2
+        possible_y = new_y, new_y + 1, new_y -1 #, new_y + 2, new_y -2
         print('n')
         sigma = 16.0
         source_distance_map = self._gaussian(old_coordinates, sigma).reshape(12,12,1)
