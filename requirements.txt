@@ -1,0 +1,10 @@
+numpy
+pandas
+bokeh
+sklearn
+pydub
+simpleaudio
+numba
+cvxpy
+dccp
+regscorepy
