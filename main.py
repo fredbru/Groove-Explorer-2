@@ -143,8 +143,6 @@ def setup_SOM(data, dim):
 def make_explorer(data_file, explorer_type='Customised'):
     #explorer_type options: 'Customised', 'Small', 'Big'
 
-    selected_audio = {'active': 'A'}
-
     def go_back():
         som.revert_active_learning()
         groove_map_info.update(pd.DataFrame(get_winners(features, names, som, palette_names),
@@ -181,43 +179,47 @@ def make_explorer(data_file, explorer_type='Customised'):
             source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
         print('Done')
 
-    def play_audio_callback(attr,old,new):
-        selection_index = source.selected.indices
-        groove_name = source.data['GrooveName'][selection_index[0]]
-        palette_name = source.data['PaletteName'][selection_index[0]]
-        file_name = 'Groove-Explorer-2/static/Big_Dataset_1-2-3-4/'+ palette_name + '/' + groove_name + '.mp3'
-        player.stop_audio()
-        player.play_audio(file_name)
+    def make_audio_panel(explorer_type):
+        PLAY_TEST_AUDIO = """
+        var index = selector.active;
+        var labels = ['A', 'B', 'C', 'D', 'E'];
+        var filename = path + labels[index] + '.mp3';
+        audio_player.stop_audio();
+        audio_player.make_audio(filename);
+        audio_player.play_audio();
+        """
 
-    def play_button_callback():
+        STOPCODE = """
+        audio_player.stop_audio();
+        """
+
         if explorer_type == 'Small':
-            file_path = 'Groove-Explorer-2/static/Test Audio/Groove Explorer Part 1 - Small/' + selected_audio['active'] + '.mp3'
-
+            test_audio_path = 'Groove-Explorer-2/static/Test Audio/Groove Explorer Part 1 - Small/'
         if explorer_type == 'Customised':
-            file_path = 'Groove-Explorer-2/static/Test Audio/Groove Explorer Part 2 - Customisable/' + selected_audio['active'] + '.mp3'
-        player.stop_audio()
-        player.play_audio(file_path)
+            test_audio_path = 'Groove-Explorer-2/static/Test Audio/Groove Explorer Part 2 - Customisable/'
 
-    def stop_button_callback():
-        player.stop_audio()
-
-    def audio_selector_handler(attr,old,new):
-        labels = ['A', 'B', 'C', 'D', 'E']
-        selected_audio['active'] = labels[new]
-
-    def make_audio_panel():
         labels = ['A', 'B', 'C', 'D', 'E']
         audio_selector = RadioGroup(labels=labels, height_policy="auto", sizing_mode='scale_width', active=0)
-        audio_selector.on_change('active', audio_selector_handler)
-        print(audio_selector.active)
+
         play_button = Button(label='Play')
-        play_button.on_click(play_button_callback)
+        play_button.js_on_click(CustomJS(args=dict(selector=audio_selector, path=test_audio_path), code=PLAY_TEST_AUDIO))
         stop_button = Button(label='Stop')
-        stop_button.on_click(stop_button_callback)
+        stop_button.js_on_click(CustomJS(code=STOPCODE))
         audio_panel = column(audio_selector, play_button, stop_button)
         return audio_panel
 
-    player = audio_player.audio_player()
+    PLAY_FROM_EXPLORER = """
+    var alldata = source.data;
+    var selected = source.selected.indices;
+    var groovename = alldata['GrooveName'][selected[0]];
+    var palette = alldata['PaletteName'][selected[0]];
+    var filetype = ".mp3";
+    var filename = path + palette + '/' + groovename + '.mp3'
+    audio_player.stop_audio();
+    audio_player.make_audio(filename);
+    audio_player.play_audio();
+    audio.play(); """
+
     hover = HoverTool()
     hover.tooltips = [
         ('Name', '@GrooveName'),
@@ -229,20 +231,23 @@ def make_explorer(data_file, explorer_type='Customised'):
         dim = 12
         som, features, names, palette_names = setup_SOM(data_file, dim)
         if explorer_type == 'Small':
+            explorer_audio_path = "Groove-Explorer-2/static/Part 1 MP3 - Seperate Folders/"
             som.weights = np.load("Groove-Explorer-2/SOM_Weights_MLR_3M_Part1.npy")
         elif explorer_type == 'Customised':
+            explorer_audio_path = "Groove-Explorer-2/static/Part 3 MP3 - Seperate Folders/"
             som.weights = np.load("Groove-Explorer-2/SOM_Weights_MLR_2M_Part3.npy")
         groove_map_info = pd.DataFrame(get_winners(features, names, som, palette_names),
                                        columns=['GrooveName','PaletteName', 'X', 'Y','Colour'])
         source = ColumnDataSource(groove_map_info)
         explorer = figure(x_range=(-1, dim), y_range=(-1, dim), tools=TOOLS, title='Groove Explorer 2')
-        audio_selector = make_audio_panel()
+        audio_selector = make_audio_panel(explorer_type)
 
 
     elif explorer_type == 'Big':
-        dim = 24
+        dim = 28
         som, features, names, palette_names = setup_SOM(data_file, dim)
-        som.weights = np.load("Groove-Explorer-2/SOM_Weights_MLR_3M_BIG.npy")
+        explorer_audio_path = "Groove-Explorer-2/static/Big_Dataset_Reduced/"
+        som.weights = np.load("Groove-Explorer-2/SOM_Weights_MLR_3M_BIG_s3-5_28x28.npy")
         groove_map_info = pd.DataFrame(get_winners(features, names, som, palette_names),
                                        columns=['GrooveName', 'PaletteName', 'X', 'Y', 'Colour'])
         source = ColumnDataSource(groove_map_info)
@@ -254,7 +259,7 @@ def make_explorer(data_file, explorer_type='Customised'):
 
     renderer = explorer.circle(source=source, x='X', y='Y', color='Colour', fill_alpha=0.6, size=15,
                                hover_fill_color='yellow', hover_alpha=1, nonselection_alpha=0.6)
-    renderer.data_source.selected.on_change('indices', play_audio_callback)
+    renderer.data_source.selected.js_on_change('indices', CustomJS(code=PLAY_FROM_EXPLORER, args=dict(source=source, path=explorer_audio_path)))
 
     if explorer_type == 'Customised':
         point_drag = PointDrawTool(renderers=[renderer], add=False)
@@ -274,45 +279,47 @@ def make_list_panel():
 
     path = 'Groove-Explorer-2/static/Part 4 MP3 - Seperate Folders/'
 
-    selected_test_audio = {'active': 'A'}
-
     def get_files(index, labels):
         palette_files = os.listdir(path + labels[index] + '/')
         groove_names = [x[:-4] for x in palette_files]
         return groove_names
 
-    def groove_selection_handler(attr, old, new):
-        groove_name = groove_file_select.labels[new]
-        palette_name_index = palette_file_select.active
-        palette_name = palette_labels[palette_name_index]
-        file_name = path + palette_name + '/' + groove_name + '.mp3'
-        player.stop_audio()
-        player.play_audio(file_name)
-
-    def play_button_callback():
-        file_path = 'Groove-Explorer-2/static/Test Audio/List Interface/' + selected_test_audio['active'] + '.mp3'
-        player.stop_audio()
-        player.play_audio(file_path)
-
-    def stop_button_callback():
-        player.stop_audio()
-
-    def audio_selector_handler(attr,old,new):
-        labels = ['A', 'B', 'C', 'D', 'E']
-        selected_test_audio['active'] = labels[new]
-
     def make_audio_panel():
+        PLAY_TEST_AUDIO = """
+        var path = 'Groove-Explorer-2/static/Test Audio/List Interface/'
+        var index = selector.active;
+        var labels = ['A', 'B', 'C', 'D', 'E'];
+        var filename = path + labels[index] + '.mp3';
+        audio_player.stop_audio();
+        audio_player.make_audio(filename);
+        audio_player.play_audio();
+        """
+
+        STOPCODE = """
+        audio_player.stop_audio();
+        """
+
         labels = ['A', 'B', 'C', 'D', 'E']
         audio_selector = RadioGroup(labels=labels, height_policy="auto", sizing_mode='scale_width', active=0)
-        audio_selector.on_change('active', audio_selector_handler)
+
         play_button = Button(label='Play')
-        play_button.on_click(play_button_callback)
+        play_button.js_on_click(CustomJS(args=dict(selector=audio_selector), code=PLAY_TEST_AUDIO))
         stop_button = Button(label='Stop')
-        stop_button.on_click(stop_button_callback)
+        stop_button.js_on_click(CustomJS(code=STOPCODE))
         audio_panel = column(audio_selector, play_button, stop_button)
         return audio_panel
 
-    player = audio_player.audio_player()
+    PLAY_LIST_AUDIO = """
+    var groove = cb_obj.labels[cb_obj.active];
+    var palette = palette_select.labels[palette_select.active];
+    var path = 'Groove-Explorer-2/static/Part 4 MP3 - Seperate Folders/'
+    var filename = path + palette + '/' + groove + '.mp3';
+
+    audio_player.stop_audio();
+    audio_player.make_audio(filename);
+    audio_player.play_audio();
+    """
+
     palette_labels = os.listdir(path)
 
     opts = {
@@ -329,12 +336,11 @@ def make_list_panel():
         10: get_files(10, palette_labels),
         11: get_files(11, palette_labels),
     }
-
-    groove_file_select = RadioGroup(labels=opts[0], height_policy="auto", sizing_mode='scale_width')
-    groove_file_select.on_change('active', groove_selection_handler)
-
-
     palette_file_select = RadioGroup(labels=palette_labels, active=0, sizing_mode='scale_width')
+    groove_file_select = RadioGroup(labels=opts[0], height_policy="auto", sizing_mode='scale_width')
+    #groove_file_select.js_on_change('active', groove_selection_handler)
+
+    groove_file_select.js_on_change('active', CustomJS(code=PLAY_LIST_AUDIO, args=dict(palette_select=palette_file_select)))
     palette_file_select.js_on_change('active', CustomJS(args=dict(ms=groove_file_select), code="""
     const opts = %s
     ms.labels = opts[cb_obj.active]
@@ -344,6 +350,8 @@ def make_list_panel():
 
     return row(palette_file_select, groove_file_select, audio_panel)
 
+list_panel = make_list_panel()
+list_tab = Panel(child=list_panel, title="File Browser")
 
 list_panel = make_list_panel()
 list_tab = Panel(child=list_panel, title="File Browser")
