@@ -12,7 +12,6 @@ from bokeh.models import Button
 from bokeh.io import curdoc
 from sklearn import preprocessing
 import os
-import audio_player
 
 
 np.set_printoptions(suppress=True, precision=6)
@@ -153,6 +152,7 @@ def make_explorer(data_file, explorer_type='Customised'):
             source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
 
     def pan_python_callback():
+        print('pan callback executed')
         for i in range(94):
             if source.data['X'][i] != groove_map_info['X'][i]:
                 old_coordinates = [int(round(groove_map_info['X'][i], 0)),
@@ -209,10 +209,9 @@ def make_explorer(data_file, explorer_type='Customised'):
         return audio_panel
 
     PLAY_FROM_EXPLORER = """
-    var alldata = source.data;
     var selected = source.selected.indices;
-    var groovename = alldata['GrooveName'][selected[0]];
-    var palette = alldata['PaletteName'][selected[0]];
+    var groovename = source.data['GrooveName'][selected[0]];
+    var palette = source.data['PaletteName'][selected[0]];
     var filetype = ".mp3";
     var filename = path + palette + '/' + groovename + '.mp3'
     audio_player.stop_audio();
@@ -225,7 +224,7 @@ def make_explorer(data_file, explorer_type='Customised'):
         ('Name', '@GrooveName'),
         ('Palette', '@PaletteName'),
     ]
-    TOOLS = "crosshair, wheel_zoom, tap, pan, reset"
+    TOOLS = "crosshair, wheel_zoom, pan, reset"
 
     if explorer_type in ['Small','Customised']:
         dim = 12
@@ -256,10 +255,11 @@ def make_explorer(data_file, explorer_type='Customised'):
 
 
     explorer.add_tools(hover)
+    explorer.add_tools(TapTool(callback=CustomJS(code=PLAY_FROM_EXPLORER,
+                                                 args=dict(source=source, path=explorer_audio_path))))
 
     renderer = explorer.circle(source=source, x='X', y='Y', color='Colour', fill_alpha=0.6, size=15,
                                hover_fill_color='yellow', hover_alpha=1, nonselection_alpha=0.6)
-    renderer.data_source.selected.js_on_change('indices', CustomJS(code=PLAY_FROM_EXPLORER, args=dict(source=source, path=explorer_audio_path)))
 
     if explorer_type == 'Customised':
         point_drag = PointDrawTool(renderers=[renderer], add=False)
@@ -267,13 +267,12 @@ def make_explorer(data_file, explorer_type='Customised'):
         explorer.on_event(PanEnd, pan_python_callback)
         go_back_button = Button(label='Undo Customize')
         go_back_button.on_click(go_back)
-
         return row(column(explorer, go_back_button), audio_selector)
+
     elif explorer_type == 'Small':
         return row(explorer, audio_selector)
     elif explorer_type == 'Big':
         return explorer
-
 
 def make_list_panel():
 
