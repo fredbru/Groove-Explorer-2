@@ -164,13 +164,14 @@ class MusicSOM(object):
         self.y = y
         self.perceptual_weights = np.full(input_len, 0.5)
         #self.local_weights = np.ones(self.weights.shape)
-        path = "/home/fred/BFD/python/Groove-Explorer-2/"
+        path = "Groove-Explorer-2/"
         coefficients = np.load(path+coefficients_file).reshape(1,1,input_len)
 
         self.local_weights = np.broadcast_to(coefficients, (x,y,input_len))
+        self.initial_weights = np.copy(self.local_weights)
         self.active_learning_step_count = 0
         self.local_weights_history =  []
-        self.local_weights_history.append(self.local_weights)
+        self.local_weights_history.append(np.copy(self.local_weights))
 
     def winner(self, x):
         """Computes the coordinates of the winning neuron for the sample x
@@ -436,7 +437,7 @@ class MusicSOM(object):
             winner_x = winner[0]
             winner_y = winner[1]
             if (winner_x in possible_x) and (winner_y in possible_y):
-                print("Winner = ", self.winner(groove))
+                #print("Winner = ", self.winner(groove))
                 break
             else:
                 self.perceptual_weights = self.perceptual_weights +(error_vector * learning_rate)
@@ -454,7 +455,7 @@ class MusicSOM(object):
         possible_x = new_x, new_x + 1, new_x -1 #, new_x + 2, new_x - 2
         new_y = new_coordinates[1]
         possible_y = new_y, new_y + 1, new_y -1 #, new_y + 2, new_y -2
-        print('n')
+        #print('n')
         sigma = 16.0
         source_distance_map = self._gaussian(old_coordinates, sigma).reshape(12,12,1)
         target_distance_map = self._gaussian(new_coordinates, sigma).reshape(12,12,1)
@@ -465,7 +466,7 @@ class MusicSOM(object):
             winner_x = winner[0]
             winner_y = winner[1]
             if (winner_x in possible_x) and (winner_y in possible_y):
-                print("Winner = ", self.winner(groove))
+                # print("Winner = ", self.winner(groove))
                 break
             else:
                 # local_weights = x,y,input_len
@@ -477,7 +478,7 @@ class MusicSOM(object):
                 # print("localweights= ", self.local_weights[new_x, new_y, :])
 
         self.active_learning_step_count += 1
-        self.local_weights_history.append(self.local_weights)
+        self.local_weights_history.append(np.copy(self.local_weights))
 
         for i in range(2):
             randomItem = groove
@@ -491,4 +492,11 @@ class MusicSOM(object):
             self.local_weights = self.local_weights_history[self.active_learning_step_count - 1]
             del(self.local_weights_history[self.active_learning_step_count])
             self.active_learning_step_count -= 1
+
+    def reset_active_learning(self):
+        self.local_weights = np.copy(self.initial_weights)
+        del self.local_weights_history
+        self.local_weights_history =  []
+        self.local_weights_history.append(self.local_weights)
+        self.active_learning_step_count = 0
 

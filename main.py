@@ -151,6 +151,15 @@ def make_explorer(data_file, explorer_type='Customised'):
             new_Y = groove_map_info['Y'][i]
             source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
 
+    def reset():
+        som.reset_active_learning()
+        groove_map_info.update(pd.DataFrame(get_winners(features, names, som, palette_names),
+                                            columns=['GrooveName', 'PaletteName', 'X', 'Y', 'Colour']))
+        for i in range(94):
+            new_X = groove_map_info['X'][i]
+            new_Y = groove_map_info['Y'][i]
+            source.patch({'X': [(i, new_X)], 'Y': [(i, new_Y)]})
+
     def pan_python_callback():
         print('pan callback executed')
         for i in range(94):
@@ -185,8 +194,7 @@ def make_explorer(data_file, explorer_type='Customised'):
         var labels = ['A', 'B', 'C', 'D', 'E'];
         var filename = path + labels[index] + '.mp3';
         audio_player.stop_audio();
-        audio_player.make_audio(filename);
-        audio_player.play_audio();
+        audio_player.play_audio(filename);
         """
 
         STOPCODE = """
@@ -215,9 +223,8 @@ def make_explorer(data_file, explorer_type='Customised'):
     var filetype = ".mp3";
     var filename = path + palette + '/' + groovename + '.mp3'
     audio_player.stop_audio();
-    audio_player.make_audio(filename);
-    audio_player.play_audio();
-    audio.play(); """
+    audio_player.play_audio(filename);
+    """
 
     hover = HoverTool()
     hover.tooltips = [
@@ -266,8 +273,10 @@ def make_explorer(data_file, explorer_type='Customised'):
         explorer.add_tools(point_drag)
         explorer.on_event(PanEnd, pan_python_callback)
         go_back_button = Button(label='Undo Customize')
+        reset_button = Button(label='Reset Customization')
         go_back_button.on_click(go_back)
-        return row(column(explorer, go_back_button), audio_selector)
+        reset_button.on_click(reset)
+        return row(column(explorer, go_back_button, reset_button), audio_selector)
 
     elif explorer_type == 'Small':
         return row(explorer, audio_selector)
@@ -290,8 +299,7 @@ def make_list_panel():
         var labels = ['A', 'B', 'C', 'D', 'E'];
         var filename = path + labels[index] + '.mp3';
         audio_player.stop_audio();
-        audio_player.make_audio(filename);
-        audio_player.play_audio();
+        audio_player.play_audio(filename);
         """
 
         STOPCODE = """
@@ -315,8 +323,7 @@ def make_list_panel():
     var filename = path + palette + '/' + groove + '.mp3';
 
     audio_player.stop_audio();
-    audio_player.make_audio(filename);
-    audio_player.play_audio();
+    audio_player.play_audio(filename);
     """
 
     palette_labels = os.listdir(path)
@@ -361,7 +368,7 @@ small_explorer_tab = Panel(child=explorer_part_1, title="Groove Explorer Part 1 
 explorer_part_2 = make_explorer(data_file='Part3_', explorer_type='Customised')
 customised_explorer_tab = Panel(child=explorer_part_2, title="Groove Explorer Part 2 - Customised")
 
-explorer_part_3 = make_explorer(data_file='BIG_', explorer_type='Big')
+explorer_part_3 = make_explorer(data_file='BIG_Reduced_', explorer_type='Big')
 big_explorer_tab = Panel(child=explorer_part_3, title="Groove Explorer Part 3 - Big")
 
 tabs = Tabs(tabs=[list_tab, small_explorer_tab, customised_explorer_tab, big_explorer_tab])
